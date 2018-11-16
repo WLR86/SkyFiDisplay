@@ -1,12 +1,14 @@
 #! /usr/bin/python
 # vim: set fileencoding=utf-8 autoindent expandtab tabstop=2 shiftwidth=2 softtabstop=2 :
 
-import time, sys
+import string, time, sys, re
+
+CHUNK_SIZE = 20
 
 def hex2deg(n=''):
   if n:
     value = int(int(n,16)/256)
-    result = (value/pow(2,24))*360
+    result = (value/16777216)*360
     return result
 
 def deg2HMS(ra='', dec='', round=True):
@@ -44,6 +46,22 @@ def decode(ra='',dec='',round=False):
   if dec:
     return deg2HMS(dec=hex2deg(dec))
 
+def each_chunk(stream, separator):
+  buffer = ''
+  while True:  # until EOF
+    chunk = stream.read(CHUNK_SIZE)  # I propose 4096 or so
+    if not chunk:  # EOF?
+      yield buffer
+      break
+    buffer += chunk
+    while True:  # until no separator is found
+      try:
+        part, buffer = buffer.split(separator, 1)
+      except ValueError:
+        break
+      else:
+        yield part
+
 #  def main():
     #  ser = serial.Serial(SERIAL_PORT, SERIAL_RATE)
     #  while True:
@@ -52,12 +70,6 @@ def decode(ra='',dec='',round=False):
         #  reading = ser.readline().decode('utf-8')
         #  # reading is a string...do whatever you want from here
         #  print(reading)
-
-def loopValues():
-  for spot in spots:
-    sys.stdout.write(spot)
-    sys.stdout.flush()
-    time.sleep(1)
 
 def loopDecode():
   for spot in spots:
@@ -68,11 +80,17 @@ def loopDecode():
     print(" RA:",decode(ra=hexRA))
     print("Dec:",decode(dec=hexDec))
 
-def main(spots):
-  while True:
-    loopValues()
-    # loopDecode()
-
 if __name__ == '__main__':
-  spots = ["eFA263700,3E15D100#","e34AB0500,12CE0500#","e14AB0500,72CE0500#"]
-  main(spots)
+  myFile = sys.stdin
+  for chunk in each_chunk(myFile, separator='#'):
+    string = re.compile(r"e([A-F0-9\/]{8})\,([A-F,0-9]{8})")
+    s = string.match(chunk)
+    if s:
+      hexRA = s.group(1)
+      hexDec = s.group(2)
+      RA = hex2deg(hexRA)
+      Dec = hex2deg(hexDec)
+      print( ' RA:' + RA  )
+      print( 'Dec:' + Dec )
+
+
