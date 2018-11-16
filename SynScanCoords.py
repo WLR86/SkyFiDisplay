@@ -1,4 +1,4 @@
-#! /usr/bin/python
+#! /usr/local/bin/python3
 # vim: set fileencoding=utf-8 autoindent expandtab tabstop=2 shiftwidth=2 softtabstop=2 :
 
 import string, time, sys, re
@@ -6,10 +6,8 @@ import string, time, sys, re
 CHUNK_SIZE = 20
 
 def hex2deg(n=''):
-  if n:
-    value = int(int(n,16)/256)
-    result = (value/16777216)*360
-    return result
+  value = int(int(n,16)/256)
+  return (value/pow(2,24))*360
 
 def deg2HMS(ra='', dec='', round=True):
   RA, DEC, rs, ds = '', '', '', ''
@@ -86,11 +84,15 @@ if __name__ == '__main__':
     string = re.compile(r"e([A-F0-9\/]{8})\,([A-F,0-9]{8})")
     s = string.match(chunk)
     if s:
-      hexRA = s.group(1)
+      hexRA  = s.group(1)
       hexDec = s.group(2)
-      RA = hex2deg(hexRA)
-      Dec = hex2deg(hexDec)
-      print( ' RA:' + RA  )
-      print( 'Dec:' + Dec )
+      RA     = decode(ra=hexRA)
+      Dec    = decode(dec=hexDec)
+      #  hexRA = "FA263700"
+      #  hexDec = "3E15D100"
+      #  RA =  (int(int(hexRA ,16)/256)/16777216)*360
+      #  Dec = (int(int(hexDec,16)/256)/16777216)*360
+      print( ' RA:' + str(RA)  )
+      print( 'Dec:' + str(Dec) )
 
 
