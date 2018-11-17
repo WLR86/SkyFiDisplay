@@ -24,7 +24,7 @@ def deg2HMS(ra='', dec='', round=True):
       decS = int((abs((dec-deg)*60)-decM)*60)
     else:
       decS = (abs((dec-deg)*60)-decM)*60
-    DEC = '{}{:02d}°{:02d}m{:02d}s'.format(ds, deg, decM, decS)
+    DEC = "{}{:02d}°{:02d}'{:02d}\"".format(ds, deg, decM, decS)
   if ra:
     if str(ra)[0] == '-':
       rs, ra = '-', abs(ra)
@@ -34,7 +34,7 @@ def deg2HMS(ra='', dec='', round=True):
       raS = int(((((ra/15)-raH)*60)-raM)*60)
     else:
       raS = ((((ra/15)-raH)*60)-raM)*60
-    RA = '{}{:02d}h{:02d}m{:02d}s'.format(rs, raH, raM, raS)
+    RA = "{}{:02d}h{:02d}'{:02d}\"".format(rs, raH, raM, raS)
   if ra and dec:
     return (RA, DEC)
   else:
@@ -49,8 +49,8 @@ def decode(ra='',dec='',round=False):
     return deg2HMS(dec=hex2deg(dec))
 
 def displayConsole(ra='',dec=''):
-  print( ' RA: ' + ra + '     ' )
-  print( 'Dec:' + dec + '     ' )
+  print( u' α:  ' + ra + '     ' )
+  print( u' δ: ' + dec + '     ' )
   sys.stdout.write( u"\u001b[2A" )
   sys.stdout.write( u"\u001b[30D" )
   # This timer is aimed at slowing down the output when simulating data from a
