@@ -12,16 +12,13 @@ def hex2deg(n=''):
 def deg2HMS(ra='', dec='', round=True):
   RA, DEC, rs, ds = '', '', '', ''
   if dec:
+    if int(dec) > 180:
+      dec = dec - 360
     if str(dec)[0] == '-':
       ds, dec = '-', abs(dec)
+    else:
+      ds, dec = '+', abs(dec)
     deg = int(dec)
-    #  if deg <= 0x400000:
-      #  deg = deg - 0x400000
-    #  elif deg >0x400000 and deg <= 0x800000:
-      #  deg = deg - 0x800000
-    #  elif deg > 0x800000 and deg <= 0xB00000:
-      #  deg = deg - 0x400000
-
     decM = abs(int((dec-deg)*60))
     if round:
       decS = int((abs((dec-deg)*60)-decM)*60)
@@ -52,7 +49,7 @@ def decode(ra='',dec='',round=False):
     return deg2HMS(dec=hex2deg(dec))
 
 def displayConsole(ra='',dec=''):
-  print( ' RA:' + ra  + '     ' )
+  print( ' RA: ' + ra + '     ' )
   print( 'Dec:' + dec + '     ' )
   sys.stdout.write( u"\u001b[2A" )
   sys.stdout.write( u"\u001b[30D" )
