@@ -48,14 +48,18 @@ def decode(ra='',dec='',round=False):
   if dec:
     return deg2HMS(dec=hex2deg(dec))
 
-def displayConsole(ra='',dec=''):
-  print( u' α:  ' + ra + '     ' )
-  print( u' δ: ' + dec + '     ' )
+def displayConsole(ra='',dec='',labels='short'):
+  if labels == 'short':
+    print( u' α=  ' + ra + '     ' )
+    print( u' δ= ' + dec + '     ' )
+  else:
+    print( u' RA=  ' + ra + '     ' )
+    print( u'Dec= ' + dec + '     ' )
   sys.stdout.write( u"\u001b[2A" )
   sys.stdout.write( u"\u001b[30D" )
   # This timer is aimed at slowing down the output when simulating data from a
-  # dump file - Remove this on 
-  time.sleep(0.25)
+  # dump file - Remove this on
+  time.sleep(0.05)
   sys.stdout.flush()
 
 def each_chunk(stream, separator):
@@ -104,6 +108,6 @@ if __name__ == '__main__':
       Dec    = decode(dec=hexDec)
       #  print( ' RA:' + str(RA)  )
       #  print( 'Dec:' + str(Dec) )
-      displayConsole(ra=RA,dec=Dec)
+      displayConsole(ra=RA,dec=Dec,labels='long')
 
 
