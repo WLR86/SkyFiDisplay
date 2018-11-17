@@ -14,5 +14,5 @@ def main(spots):
     loopValues()
 
 if __name__ == '__main__':
-  spots = ["eFA263700,3E15D100#","e34AB0500,12CE0500#","e14AB0500,72CE0500#"]
+  spots = ["eFA263700,FE15D100#","eFA263700,3E15D100#","e34AB0500,12CE0500#","e14AB0500,72CE0500#"]
   main(spots)

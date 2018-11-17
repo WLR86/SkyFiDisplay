@@ -15,12 +15,19 @@ def deg2HMS(ra='', dec='', round=True):
     if str(dec)[0] == '-':
       ds, dec = '-', abs(dec)
     deg = int(dec)
+    #  if deg <= 0x400000:
+      #  deg = deg - 0x400000
+    #  elif deg >0x400000 and deg <= 0x800000:
+      #  deg = deg - 0x800000
+    #  elif deg > 0x800000 and deg <= 0xB00000:
+      #  deg = deg - 0x400000
+
     decM = abs(int((dec-deg)*60))
     if round:
       decS = int((abs((dec-deg)*60)-decM)*60)
     else:
       decS = (abs((dec-deg)*60)-decM)*60
-    DEC = '{}{:02d}°{:02d}:{:02d}'.format(ds, deg, decM, decS)
+    DEC = '{}{:02d}°{:02d}m{:02d}s'.format(ds, deg, decM, decS)
   if ra:
     if str(ra)[0] == '-':
       rs, ra = '-', abs(ra)
@@ -43,6 +50,16 @@ def decode(ra='',dec='',round=False):
     return deg2HMS(ra=hex2deg(ra))
   if dec:
     return deg2HMS(dec=hex2deg(dec))
+
+def displayConsole(ra='',dec=''):
+  print( ' RA:' + ra  + '     ' )
+  print( 'Dec:' + dec + '     ' )
+  sys.stdout.write( u"\u001b[2A" )
+  sys.stdout.write( u"\u001b[30D" )
+  # This timer is aimed at slowing down the output when simulating data from a
+  # dump file - Remove this on 
+  time.sleep(0.25)
+  sys.stdout.flush()
 
 def each_chunk(stream, separator):
   buffer = ''
@@ -88,11 +105,8 @@ if __name__ == '__main__':
       hexDec = s.group(2)
       RA     = decode(ra=hexRA)
       Dec    = decode(dec=hexDec)
-      #  hexRA = "FA263700"
-      #  hexDec = "3E15D100"
-      #  RA =  (int(int(hexRA ,16)/256)/16777216)*360
-      #  Dec = (int(int(hexDec,16)/256)/16777216)*360
-      print( ' RA:' + str(RA)  )
-      print( 'Dec:' + str(Dec) )
+      #  print( ' RA:' + str(RA)  )
+      #  print( 'Dec:' + str(Dec) )
+      displayConsole(ra=RA,dec=Dec)
 
 
