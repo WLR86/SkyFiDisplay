@@ -59,7 +59,7 @@ def displayConsole(ra='',dec='',labels='short'):
   sys.stdout.write( u"\u001b[30D" )
   # This timer is aimed at slowing down the output when simulating data from a
   # dump file - Remove this on
-  time.sleep(0.05)
+  time.sleep(0.25)
   sys.stdout.flush()
 
 def each_chunk(stream, separator):

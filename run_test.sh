@@ -1,3 +1,3 @@
 #!/bin/bash
 
-./emulate_stream.py | ./SynScanCoords.py
+clear; echo; echo; ./emulate_stream.py | ./SynScanCoords.py
