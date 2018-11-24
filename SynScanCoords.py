@@ -1,7 +1,7 @@
 #! /usr/local/bin/python3
 # vim: set fileencoding=utf-8 autoindent expandtab tabstop=2 shiftwidth=2 softtabstop=2 :
 
-import string, time, sys, re
+import string, datetime, time, sys, re
 
 CHUNK_SIZE = 20
 
@@ -49,12 +49,16 @@ def decode(ra='',dec='',round=False):
     return deg2HMS(dec=hex2deg(dec))
 
 def displayConsole(ra='',dec='',labels='short'):
-  if labels == 'short':
-    print( u' α=  ' + ra + '     ' )
-    print( u' δ= ' + dec + '     ' )
+  now = datetime.datetime.now()
+  if labels == 'none':
+    print( ' ' + ra + '  ' + now.strftime("%H:%M"))
+    print( dec + '  ' )
+  elif labels == 'short':
+    print( u' α=  ' + ra + '   '  )
+    print( u' δ= ' + dec + '   ' )
   else:
-    print( u' RA=  ' + ra + '     ' )
-    print( u'Dec= ' + dec + '     ' )
+    print( u' RA=  ' + ra + '     ')
+    print( u'Dec= ' + dec + '     ')
   sys.stdout.write( u"\u001b[2A" )
   sys.stdout.write( u"\u001b[30D" )
   # This timer is aimed at slowing down the output when simulating data from a
@@ -108,6 +112,6 @@ if __name__ == '__main__':
       Dec    = decode(dec=hexDec)
       #  print( ' RA:' + str(RA)  )
       #  print( 'Dec:' + str(Dec) )
-      displayConsole(ra=RA,dec=Dec,labels='long')
+      displayConsole(ra=RA,dec=Dec,labels='none')
 
 
