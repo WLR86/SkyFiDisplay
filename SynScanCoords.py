@@ -51,7 +51,7 @@ def decode(ra='',dec='',round=False):
 def displayConsole(ra='',dec='',labels='short'):
   now = datetime.datetime.now()
   if labels == 'none':
-    print( ' ' + ra + ' ' + now.strftime("%H:%M"))
+    print( ' ' + ra + ' ')
     print( dec + ' ' )
   elif labels == 'short':
     print( u' α=  ' + ra + '   '  )
@@ -60,11 +60,16 @@ def displayConsole(ra='',dec='',labels='short'):
     print( u' RA=  ' + ra + '     ')
     print( u'Dec= ' + dec + '     ')
   sys.stdout.write( u"\u001b[2A" )
-  sys.stdout.write( u"\u001b[30D" )
+  sys.stdout.write( u"\u001b[16D" )
   # This timer is aimed at slowing down the output when simulating data from a
   # dump file - Remove this on
   time.sleep(0.25)
   sys.stdout.flush()
+
+def setDateTime(dt=''):
+  print('           ' + dt)
+  sys.stdout.write( u"\u001b[2A" )
+  sys.stdout.write( u"\u001b[30D" )
 
 def each_chunk(stream, separator):
   buffer = ''
@@ -115,10 +120,14 @@ if __name__ == '__main__':
       displayConsole(ra=RA,dec=Dec,labels='none')
     getDateTime = re.match(b'^\x48([\0-\xFF])([\0-\xFF])([\0-\xFF])([\0-\xFF])([\0-\xFF])([\0-\xFF])([\0-\xFF])([\0-\xFF])',chunk.encode())
     if getDateTime:
-      Hours=int.from_bytes(getDateTime.group(1),byteorder='little').__str__()
-      Minutes=int.from_bytes(getDateTime.group(2),byteorder='little').__str__()
-      Seconds=int.from_bytes(getDateTime.group(3),byteorder='little').__str__()
-      print(Hours +":"+ Minutes+":"+Seconds)
+      Hours =   int.from_bytes(getDateTime.group(1),byteorder='little')
+      Minutes = int.from_bytes(getDateTime.group(2),byteorder='little')
+      Seconds = int.from_bytes(getDateTime.group(3),byteorder='little')
+      Month =   int.from_bytes(getDateTime.group(4),byteorder='little')
+      Day =     int.from_bytes(getDateTime.group(5),byteorder='little')
+      Year =    int.from_bytes(getDateTime.group(6),byteorder='little') + 2000
+      Time = "{:02d}:{:02d}".format(Hours, Minutes)
+      setDateTime(Time)
 
-
+##+ now.strftime("%H:%M"))
 
