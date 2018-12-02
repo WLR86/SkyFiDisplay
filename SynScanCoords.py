@@ -51,8 +51,8 @@ def decode(ra='',dec='',round=False):
 def displayConsole(ra='',dec='',labels='short'):
   now = datetime.datetime.now()
   if labels == 'none':
-    print( ' ' + ra + '  ' + now.strftime("%H:%M"))
-    print( dec + '  ' )
+    print( ' ' + ra + ' ' + now.strftime("%H:%M"))
+    print( dec + ' ' )
   elif labels == 'short':
     print( u' α=  ' + ra + '   '  )
     print( u' δ= ' + dec + '   ' )
@@ -103,15 +103,22 @@ def loopDecode():
 if __name__ == '__main__':
   myFile = sys.stdin
   for chunk in each_chunk(myFile, separator='#'):
-    string = re.compile(r"e([A-F0-9\/]{8})\,([A-F,0-9]{8})")
-    s = string.match(chunk)
-    if s:
-      hexRA  = s.group(1)
-      hexDec = s.group(2)
+    getPosString = re.compile(r"e([A-F0-9\/]{8})\,([A-F,0-9]{8})")
+    getPos = getPosString.match(chunk)
+    if getPos:
+      hexRA  = getPos.group(1)
+      hexDec = getPos.group(2)
       RA     = decode(ra=hexRA)
       Dec    = decode(dec=hexDec)
       #  print( ' RA:' + str(RA)  )
       #  print( 'Dec:' + str(Dec) )
       displayConsole(ra=RA,dec=Dec,labels='none')
+    getDateTime = re.match(b'^\x48([\0-\xFF])([\0-\xFF])([\0-\xFF])([\0-\xFF])([\0-\xFF])([\0-\xFF])([\0-\xFF])([\0-\xFF])',chunk.encode())
+    if getDateTime:
+      Hours=int.from_bytes(getDateTime.group(1),byteorder='little').__str__()
+      Minutes=int.from_bytes(getDateTime.group(2),byteorder='little').__str__()
+      Seconds=int.from_bytes(getDateTime.group(3),byteorder='little').__str__()
+      print(Hours +":"+ Minutes+":"+Seconds)
+
 
 

@@ -1,5 +1,5 @@
 #!/bin/bash
-file=dump.data
+file=dump2.data
 
 # Use actual captured data
 if [ "$1" == "file" ] && [ -f $file ]; then
