@@ -68,6 +68,7 @@ def displayConsole(ra='',dec='',labels='short'):
 
 def setDateTime(dt=''):
   print('           ' + dt)
+  print('           ')
   sys.stdout.write( u"\u001b[2A" )
   sys.stdout.write( u"\u001b[30D" )
 
