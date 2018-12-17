@@ -1,7 +1,7 @@
 #! /usr/local/bin/python3
 # vim: set fileencoding=utf-8 autoindent expandtab tabstop=2 shiftwidth=2 softtabstop=2 :
 
-import string, time, sys, re, smbus
+import string, time, sys, re, smbus, subprocess
 
 from display import *
 
@@ -63,9 +63,9 @@ def displayConsole(ra='',dec='',labels='short'):
   sys.stdout.flush()
 
 def displayLCD(ra='',dec='',labels='short'):
-
+    currentTime = time.strftime('%H%m')
     lcd_string(' ' + ra,LCD_LINE_1)
-    lcd_string(dec,LCD_LINE_2)
+    lcd_string(dec + currentTime,LCD_LINE_2)
 
 def each_chunk(stream, separator):
   buffer = ''
@@ -91,6 +91,9 @@ def each_chunk(stream, separator):
         #  reading = ser.readline().decode('utf-8')
         #  # reading is a string...do whatever you want from here
         #  print(reading)
+def setDateTime():
+   subprocess.call(['date +%T -s "' +  Time +'"'],shell=True, \
+       stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
 def loopDecode():
   for spot in spots:
@@ -117,4 +120,14 @@ if __name__ == '__main__':
       #  displayConsole(ra=RA,dec=Dec,labels='long')
       displayLCD(ra=RA,dec=Dec,labels='long')
 
+    getDateTime = re.match(b'^\x48([\0-\xFF])([\0-\xFF])([\0-\xFF])([\0-\xFF])([\0-\xFF])([\0-\xFF])([\0-\xFF])([\0-\xFF])',chunk.encode())
+    if getDateTime:
+      Hours =   int.from_bytes(getDateTime.group(1),byteorder='little')
+      Minutes = int.from_bytes(getDateTime.group(2),byteorder='little')
+      Seconds = int.from_bytes(getDateTime.group(3),byteorder='little')
+      Month =   int.from_bytes(getDateTime.group(4),byteorder='little')
+      Day =     int.from_bytes(getDateTime.group(5),byteorder='little')
+      Year =    int.from_bytes(getDateTime.group(6),byteorder='little') + 2000
+      Time = "{:02d}:{:02d}:{:02d}".format(Hours, Minutes, Seconds)
+      setDateTime(Time)
 
