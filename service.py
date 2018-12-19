@@ -23,7 +23,7 @@ def main():
             time.sleep(2)
             #  print('waiting...')
             lcd_string("Waiting",LCD_LINE_1)
-            lcd_string("for data...",LCD_LINE_2)
+            lcd_string("for data ...",LCD_LINE_2)
 
 
 if __name__ == '__main__':
