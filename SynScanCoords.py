@@ -66,7 +66,7 @@ def displayLCD(ra='',dec='',labels='short'):
   currentTime = time.strftime('%H:%M')
   lcd_string(' ' + ra + ' ' + currentTime,LCD_LINE_1)
   #  lcd_string(dec,LCD_LINE_2)
-  lcd_string(dec + ' ' ,LCD_LINE_2)
+  lcd_string(dec + ' J2000' ,LCD_LINE_2)
 
 def each_chunk(stream, separator):
   buffer = ''

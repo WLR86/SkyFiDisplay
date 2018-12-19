@@ -6,8 +6,8 @@ from display import *
 
 def main():
     lcd_init()
-    lcd_string("SkyFi Weetos",LCD_LINE_1)
-    lcd_string("(C) 2018",LCD_LINE_2)
+    lcd_string("SkyFi+DSC Disp",LCD_LINE_1)
+    lcd_string("(C) 2018 Weetos",LCD_LINE_2)
     time.sleep(5)
     while True:
         # set an interrupt on a falling edge and wait for it to happen
@@ -22,6 +22,9 @@ def main():
         else:
             time.sleep(2)
             #  print('waiting...')
+            lcd_string("Please Connect",LCD_LINE_1)
+            lcd_string("Client App",LCD_LINE_2)
+            time.sleep(4)
             lcd_string("Waiting",LCD_LINE_1)
             lcd_string("for data ...",LCD_LINE_2)
 
