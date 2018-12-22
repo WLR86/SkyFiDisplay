@@ -5,7 +5,8 @@ import subprocess,os,time
 from display import *
 
 modeFile = '/tmp/mode'
-snoopRXTXCmd = 'tailf /tmp/tb | /home/pi/SkyiDisplay/SynScanCoords.py'
+mode='appdriven'
+snoopRXTXCmd = 'tailf /tmp/tb | /home/pi/SkyFiDisplay/SynScanCoords.py'
 
 def main():
     lcd_init()
@@ -17,8 +18,8 @@ def main():
         # GPIO.wait_for_edge(INT, GPIO.FALLING)
 
         # In the meantime, let's do it without using GPIO
-        from pathlib import Path
-        mode = Path(modeFile).read_text()
+        #  from pathlib import Path
+        #  mode = Path(modeFile).read_text()
 
         if mode == 'standalone':
            # Testing
@@ -31,7 +32,7 @@ def main():
            time.sleep(2)
            exists = os.path.isfile('/tmp/tb')
            if exists:
-                subprocess.call([snoopRXTXCmd], shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+               subprocess.call([snoopRXTXCmd], shell=True)
 
            else:
                 time.sleep(2)
