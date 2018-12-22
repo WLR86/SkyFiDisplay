@@ -24,6 +24,7 @@ def main():
            # Testing
            lcd_string('Standalone mode ', LCD_LINE_1)
            lcd_string('              ON', LCD_LINE_2)
+           time.sleep(4)
         else:
            lcd_string('AppDriven mode  ', LCD_LINE_1)
            lcd_string('              ON', LCD_LINE_2)
@@ -39,6 +40,6 @@ def main():
                 time.sleep(4)
                 lcd_string('Waiting         ', LCD_LINE_1)
                 lcd_string('for data ...    ', LCD_LINE_2)
-
+                time.sleep(2)
 if __name__ == '__main__':
     main()
