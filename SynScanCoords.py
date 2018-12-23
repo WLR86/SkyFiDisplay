@@ -101,6 +101,16 @@ def setDateTime(dateTime):
   subprocess.call(['date +"%Y-%m-%d %H:%m:%S" -s "' + dateTime +'"'],shell=True, \
        stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
+def setDateTimeFromCode(getDateTime):
+  Hours =   int.from_bytes(getDateTime.group(1),byteorder='little')
+  Minutes = int.from_bytes(getDateTime.group(2),byteorder='little')
+  Seconds = int.from_bytes(getDateTime.group(3),byteorder='little')
+  Month =   int.from_bytes(getDateTime.group(4),byteorder='little')
+  Day =     int.from_bytes(getDateTime.group(5),byteorder='little')
+  Year =    int.from_bytes(getDateTime.group(6),byteorder='little') + 2000
+  currentDateTime = "{:04d}-{:02d}-{:02d} {:02d}:{:02d}:{:02d}".format(Year, Month, Day, Hours, Minutes, Seconds)
+  setDateTime(dateTime=currentDateTime)
+
 def loopDecode():
   for spot in spots:
     trimmedInput = spot[1:-1]
@@ -126,12 +136,5 @@ if __name__ == '__main__':
       displayLCD(ra=RA,dec=Dec)
     getDateTime = re.match(b'^\x48([\0-\xFF])([\0-\xFF])([\0-\xFF])([\0-\xFF])([\0-\xFF])([\0-\xFF])([\0-\xFF])([\0-\xFF])',chunk.encode())
     if getDateTime:
-      Hours =   int.from_bytes(getDateTime.group(1),byteorder='little')
-      Minutes = int.from_bytes(getDateTime.group(2),byteorder='little')
-      Seconds = int.from_bytes(getDateTime.group(3),byteorder='little')
-      Month =   int.from_bytes(getDateTime.group(4),byteorder='little')
-      Day =     int.from_bytes(getDateTime.group(5),byteorder='little')
-      Year =    int.from_bytes(getDateTime.group(6),byteorder='little') + 2000
-      currentDateTime = "{:04d}-{:02d}-{:02d} {:02d}:{:02d}:{:02d}".format(Year, Month, Day, Hours, Minutes, Seconds)
-      setDateTime(dateTime=currentDateTime)
+      setDateTimeFromCode(getDateTime)
 
