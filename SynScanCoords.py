@@ -62,11 +62,16 @@ def displayConsole(ra='',dec='',labels='short'):
   time.sleep(0.05)
   sys.stdout.flush()
 
-def displayLCD(ra='',dec='',labels='short'):
-  currentTime = time.strftime('%H:%M')
-  lcd_string(' ' + ra + ' ' + currentTime,LCD_LINE_1)
-  #  lcd_string(dec,LCD_LINE_2)
-  lcd_string(dec + ' J2000' ,LCD_LINE_2)
+def displayLCD(ra='',dec='',mode='app'):
+  if mode == 'auto':
+    currentTime = time.strftime('%H:%M')
+    lcd_string(' ' + ra + '  AUTO', LCD_LINE_1)
+    lcd_string(dec + ' J2000' , LCD_LINE_2)
+  else:
+    currentTime = time.strftime('%H:%M')
+    lcd_string(' ' + ra + ' ' + currentTime,LCD_LINE_1)
+    lcd_string(dec + ' J2000' ,LCD_LINE_2)
+
 
 def each_chunk(stream, separator):
   buffer = ''
@@ -92,8 +97,8 @@ def each_chunk(stream, separator):
         #  reading = ser.readline().decode('utf-8')
         #  # reading is a string...do whatever you want from here
         #  print(reading)
-def setDateTime(Time):
-   subprocess.call(['date +%T -s "' +  Time +'"'],shell=True, \
+def setDateTime(dateTime):
+  subprocess.call(['date +"%Y-%m-%d %H:%m:%S" -s "' + dateTime +'"'],shell=True, \
        stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
 def loopDecode():
@@ -109,7 +114,7 @@ if __name__ == '__main__':
   lcd_init()
   myFile = sys.stdin
   for chunk in each_chunk(myFile, separator='#'):
-    getPosString = re.compile(r"e([A-F0-9\/]{8})\,([A-F,0-9]{8})")
+    getPosString = re.compile(r"([A-F0-9\/]{8})\,([A-F,0-9]{8})")
     getPos = getPosString.match(chunk)
     if getPos:
       hexRA  = getPos.group(1)
@@ -118,7 +123,7 @@ if __name__ == '__main__':
       Dec    = decode(dec=hexDec)
       #  print( ' RA:' + str(RA)  )
       #  print( 'Dec:' + str(Dec) )
-      displayLCD(ra=RA,dec=Dec,labels='long')
+      displayLCD(ra=RA,dec=Dec)
     getDateTime = re.match(b'^\x48([\0-\xFF])([\0-\xFF])([\0-\xFF])([\0-\xFF])([\0-\xFF])([\0-\xFF])([\0-\xFF])([\0-\xFF])',chunk.encode())
     if getDateTime:
       Hours =   int.from_bytes(getDateTime.group(1),byteorder='little')
@@ -127,6 +132,6 @@ if __name__ == '__main__':
       Month =   int.from_bytes(getDateTime.group(4),byteorder='little')
       Day =     int.from_bytes(getDateTime.group(5),byteorder='little')
       Year =    int.from_bytes(getDateTime.group(6),byteorder='little') + 2000
-      currentTime = "{:02d}:{:02d}:{:02d}".format(Hours, Minutes, Seconds)
-      setDateTime(Time=currentTime)
+      currentDateTime = "{:04d}-{:02d}-{:02d} {:02d}:{:02d}:{:02d}".format(Year, Month, Day, Hours, Minutes, Seconds)
+      setDateTime(dateTime=currentDateTime)
 
