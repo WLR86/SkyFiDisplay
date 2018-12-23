@@ -114,7 +114,7 @@ if __name__ == '__main__':
   lcd_init()
   myFile = sys.stdin
   for chunk in each_chunk(myFile, separator='#'):
-    getPosString = re.compile(r"([A-F0-9\/]{8})\,([A-F,0-9]{8})")
+    getPosString = re.compile(r"e([A-F0-9\/]{8})\,([A-F,0-9]{8})")
     getPos = getPosString.match(chunk)
     if getPos:
       hexRA  = getPos.group(1)
