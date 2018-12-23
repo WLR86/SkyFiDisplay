@@ -6,7 +6,7 @@ from display import *
 from SynScanCoords import *
 
 modeFile = '/tmp/mode'
-mode='appdriven'
+mode='standalone'
 host = 'localhost'
 port = '11880'
 snoopRXTXCmd = '/bin/tailf /tmp/tb | /home/pi/SkyFiDisplay/SynScanCoords.py'
@@ -63,7 +63,7 @@ def main():
                    Dec    = decode(dec=hexDec)
                    displayLCD(ra=RA,dec=Dec,mode='auto_disabled')
                #  logging.debug(chunk)
-               time.sleep(1)
+               time.sleep(2)
 
         else:
            lcd_string('AppDriven mode  ', LCD_LINE_1)
