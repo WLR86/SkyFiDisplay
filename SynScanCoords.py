@@ -62,16 +62,10 @@ def displayConsole(ra='',dec='',labels='short'):
   time.sleep(0.05)
   sys.stdout.flush()
 
-def displayLCD(ra='',dec='',mode='app'):
-  if mode == 'auto':
-    currentTime = time.strftime('%H:%M')
-    lcd_string(' ' + ra + '  AUTO', LCD_LINE_1)
-    lcd_string(dec + ' J2000' , LCD_LINE_2)
-  else:
+def displayLCD(ra='',dec=''):
     currentTime = time.strftime('%H:%M')
     lcd_string(' ' + ra + ' ' + currentTime,LCD_LINE_1)
     lcd_string(dec + ' J2000' ,LCD_LINE_2)
-
 
 def each_chunk(stream, separator):
   buffer = ''
@@ -89,14 +83,6 @@ def each_chunk(stream, separator):
       else:
         yield part
 
-#  def main():
-    #  ser = serial.Serial(SERIAL_PORT, SERIAL_RATE)
-    #  while True:
-        #  # using ser.readline() assumes each line contains a single reading
-        #  # sent using Serial.println() on the Arduino
-        #  reading = ser.readline().decode('utf-8')
-        #  # reading is a string...do whatever you want from here
-        #  print(reading)
 def setDateTime(dateTime):
   subprocess.call(['date +"%Y-%m-%d %H:%m:%S" -s "' + dateTime +'"'],shell=True, \
        stdout=subprocess.PIPE, stderr=subprocess.PIPE)

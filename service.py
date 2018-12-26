@@ -51,7 +51,7 @@ def main():
           hexDec = getPos.group(2)
           RA     = decode(ra=hexRA)
           Dec    = decode(dec=hexDec)
-          displayLCD(ra=RA,dec=Dec,mode='auto_disabled')
+          displayLCD(ra=RA,dec=Dec)
           #  logging.debug(chunk)
           time.sleep(2)
 
