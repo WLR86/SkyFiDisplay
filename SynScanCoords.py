@@ -88,13 +88,9 @@ def setDateTime(dateTime):
        stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
 def setDateTimeFromCode(getDateTime):
-  Hours =   int.from_bytes(getDateTime.group(1),byteorder='little')
-  Minutes = int.from_bytes(getDateTime.group(2),byteorder='little')
-  Seconds = int.from_bytes(getDateTime.group(3),byteorder='little')
-  Month =   int.from_bytes(getDateTime.group(4),byteorder='little')
-  Day =     int.from_bytes(getDateTime.group(5),byteorder='little')
-  Year =    int.from_bytes(getDateTime.group(6),byteorder='little') + 2000
-  currentDateTime = "{:04d}-{:02d}-{:02d} {:02d}:{:02d}:{:02d}".format(Year, Month, Day, Hours, Minutes, Seconds)
+  for x in range(1,6):
+    t[x] = int.from_bytes(getDateTime.group(x),byteorder='little')
+  currentDateTime = "{:04d}-{:02d}-{:02d} {:02d}:{:02d}:{:02d}".format(t[6], t[5], t[4], t[1], t[2], t[3])
   setDateTime(dateTime=currentDateTime)
 
 def loopDecode():
