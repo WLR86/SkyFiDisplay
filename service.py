@@ -44,7 +44,6 @@ def main():
       while True:
         child.sendline ('e\x04')
         child.expect ('#')
-        child.sendline ('e\x04')
         getPosString = re.compile(r"e([A-F0-9\/]{8})\,([A-F,0-9]{8})#")
         getPos = getPosString.match(chunk)
         if getPos:
