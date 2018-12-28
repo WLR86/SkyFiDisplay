@@ -6,6 +6,8 @@ import subprocess,os,time,pexpect,logging,re
 from display import *
 from SynScanCoords import *
 
+# the following settings should
+# be stored in a dedicated file
 modeFile = '/tmp/mode'
 mode='standalone'
 host = 'localhost'
@@ -14,6 +16,28 @@ snoopRXTXCmd = '/bin/tailf /tmp/tb | /home/pi/SkyFiDisplay/SynScanCoords.py'
 # logging
 LOG = "/tmp/lcd.log"
 logging.basicConfig(filename=LOG, filemode="w", level=logging.DEBUG)
+
+def getDateTimeFromSynScan(H=host,P=port):
+  child = pexpect.spawn('nc %s %s'%(H, P))
+  # It's now ok to get date and time from the SynScan ('h' query)
+  child.sendline('h\x04')
+  child.expect('#')
+  chunk = child.before.decode('utf-8').replace('\r\n','')
+  DateTime = re.match(b'^\x68([\0-\xFF])([\0-\xFF])([\0-\xFF])([\0-\xFF])([\0-\xFF])([\0-\xFF])([\0-\xFF])([\0-\xFF])',chunk.encode())
+  return DateTime
+
+def getPosFromSynScan():
+      child.sendline ('e\x04')
+      child.expect ('#')
+      chunk = child.before.decode('utf-8').replace('\r\n','')
+      getPosString = re.compile(r"e([A-F0-9\/]{8})\,([A-F,0-9]{8})#")
+      getPos = getPosString.match(chunk)
+      if getPos:
+        hexRA  = getPos.group(1)
+        hexDec = getPos.group(2)
+        RA     = decode(ra=hexRA)
+        Dec    = decode(dec=hexDec)
+        return([RA,Dec])
 
 def main():
   lcd_init()
@@ -31,29 +55,15 @@ def main():
       lcd_string('Standalone mode ', LCD_LINE_1)
       lcd_string('              ON', LCD_LINE_2)
       time.sleep(4)
-      child = pexpect.spawn('nc %s %s'%(host, port))
-      # It's now ok to get date and time from the SynScan ('h' query)
-      child.sendline('h\x04')
-      child.expect('#')
-      chunk = child.before.decode('utf-8').replace('\r\n','')
-      getDateTime = re.match(b'^\x68([\0-\xFF])([\0-\xFF])([\0-\xFF])([\0-\xFF])([\0-\xFF])([\0-\xFF])([\0-\xFF])([\0-\xFF])',chunk.encode())
 
-      if getDateTime:
-        setDateTimeFromCode(getDateTime)
+      DateTime = getDateTimeFromSynScan(host,port)
+      if DateTime:
+        setDateTimeFromCode(DateTime)
 
       while True:
-        child.sendline ('e\x04')
-        child.expect ('#')
-        getPosString = re.compile(r"e([A-F0-9\/]{8})\,([A-F,0-9]{8})#")
-        getPos = getPosString.match(chunk)
-        if getPos:
-          hexRA  = getPos.group(1)
-          hexDec = getPos.group(2)
-          RA     = decode(ra=hexRA)
-          Dec    = decode(dec=hexDec)
-          displayLCD(ra=RA,dec=Dec)
-          #  logging.debug(chunk)
-          time.sleep(2)
+        pos = getPosFromSynScan()
+        displayLCD(ra=pos[0],dec=pos[1])
+        time.sleep(2)
 
     else:
       lcd_string('AppDriven mode  ', LCD_LINE_1)
