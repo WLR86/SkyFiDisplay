@@ -9,7 +9,7 @@ from SynScanCoords import *
 # the following settings should
 # be stored in a dedicated file
 modeFile = '/tmp/mode'
-mode='standalone'
+mode='appdriven'
 host = 'localhost'
 port = '11880'
 snoopRXTXCmd = '/bin/tailf /tmp/tb | /home/pi/SkyFiDisplay/SynScanCoords.py'

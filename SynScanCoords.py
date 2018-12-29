@@ -88,8 +88,10 @@ def setDateTime(dateTime):
        stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
 def setDateTimeFromCode(getDateTime):
-  for x in range(1,6):
-    t[x] = int.from_bytes(getDateTime.group(x),byteorder='little')
+  t = [0,0,0,0,0,0]
+  for x in range(1,7):
+    print(x)
+    t.append(int.from_bytes(getDateTime.group(x),byteorder='little'))
   currentDateTime = "{:04d}-{:02d}-{:02d} {:02d}:{:02d}:{:02d}".format(t[6], t[5], t[4], t[1], t[2], t[3])
   setDateTime(dateTime=currentDateTime)
 
