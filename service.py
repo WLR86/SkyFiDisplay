@@ -11,7 +11,7 @@ from SynScanCoords import *
 modeFile = '/tmp/mode'
 mode='appdriven'
 host = 'localhost'
-port = '11880'
+port = '4030'
 snoopRXTXCmd = '/bin/tailf /tmp/tb | /home/pi/SkyFiDisplay/SynScanCoords.py'
 # logging
 LOG = "/tmp/lcd.log"
