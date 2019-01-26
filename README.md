@@ -1,4 +1,4 @@
-# SkyFi-like adaptor prototype
+# SkyFi-like adapter prototype
 
 This is a proof of concept of a device that allows controlling a Sky-Watcher
 SynScan equatorial mount from SkySafari running on a smartphone.
