@@ -1,9 +1,9 @@
 #! /usr/local/bin/python3
 # vim: set fileencoding=utf-8 autoindent expandtab tabstop=2 shiftwidth=2 softtabstop=2 :
 
-import string, datetime, time, sys, re
+import string, time, sys, re, smbus, subprocess
 
-CHUNK_SIZE = 20
+from display import *
 
 def hex2deg(n=''):
   value = int(int(n,16)/256)
@@ -24,7 +24,7 @@ def deg2HMS(ra='', dec='', round=True):
       decS = int((abs((dec-deg)*60)-decM)*60)
     else:
       decS = (abs((dec-deg)*60)-decM)*60
-    DEC = "{}{:02d}°{:02d}'{:02d}\"".format(ds, deg, decM, decS)
+    DEC = "{}{:02d}ß{:02d}'{:02d}\"".format(ds, deg, decM, decS)
   if ra:
     if str(ra)[0] == '-':
       rs, ra = '-', abs(ra)
@@ -62,15 +62,14 @@ def displayConsole(ra='',dec='',labels='short'):
   sys.stdout.write( u"\u001b[2A" )
   sys.stdout.write( u"\u001b[16D" )
   # This timer is aimed at slowing down the output when simulating data from a
-  # dump file - Remove this on
-  time.sleep(0.25)
+  # dump file - Remove this on production
+  time.sleep(0.05)
   sys.stdout.flush()
 
-def setDateTime(dt=''):
-  print('           ' + dt)
-  print('           ')
-  sys.stdout.write( u"\u001b[2A" )
-  sys.stdout.write( u"\u001b[30D" )
+def displayLCD(ra='',dec=''):
+    currentTime = time.strftime('%H:%M')
+    lcd_string(' ' + ra + ' ' + currentTime,LCD_LINE_1)
+    lcd_string(dec + ' J2000' ,LCD_LINE_2)
 
 def each_chunk(stream, separator):
   buffer = ''
@@ -88,14 +87,17 @@ def each_chunk(stream, separator):
       else:
         yield part
 
-#  def main():
-    #  ser = serial.Serial(SERIAL_PORT, SERIAL_RATE)
-    #  while True:
-        #  # using ser.readline() assumes each line contains a single reading
-        #  # sent using Serial.println() on the Arduino
-        #  reading = ser.readline().decode('utf-8')
-        #  # reading is a string...do whatever you want from here
-        #  print(reading)
+def setDateTime(dateTime):
+  subprocess.call(['date +"%Y-%m-%d %H:%m:%S" -s "' + dateTime +'"'],shell=True, \
+       stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+
+def setDateTimeFromCode(getDateTime):
+  t = [0,0,0,0,0,0]
+  for x in range(1,7):
+    print(x)
+    t.append(int.from_bytes(getDateTime.group(x),byteorder='little'))
+  currentDateTime = "{:04d}-{:02d}-{:02d} {:02d}:{:02d}:{:02d}".format(t[6], t[5], t[4], t[1], t[2], t[3])
+  setDateTime(dateTime=currentDateTime)
 
 def loopDecode():
   for spot in spots:
@@ -107,6 +109,7 @@ def loopDecode():
     print("Dec:",decode(dec=hexDec))
 
 if __name__ == '__main__':
+  lcd_init()
   myFile = sys.stdin
   for chunk in each_chunk(myFile, separator='#'):
     getPosString = re.compile(r"e([A-F0-9\/]{8})\,([A-F,0-9]{8})")
@@ -118,17 +121,8 @@ if __name__ == '__main__':
       Dec    = decode(dec=hexDec)
       #  print( ' RA:' + str(RA)  )
       #  print( 'Dec:' + str(Dec) )
-      displayConsole(ra=RA,dec=Dec,labels='none')
+      displayLCD(ra=RA,dec=Dec)
     getDateTime = re.match(b'^\x48([\0-\xFF])([\0-\xFF])([\0-\xFF])([\0-\xFF])([\0-\xFF])([\0-\xFF])([\0-\xFF])([\0-\xFF])',chunk.encode())
     if getDateTime:
-      Hours =   int.from_bytes(getDateTime.group(1),byteorder='little')
-      Minutes = int.from_bytes(getDateTime.group(2),byteorder='little')
-      Seconds = int.from_bytes(getDateTime.group(3),byteorder='little')
-      Month =   int.from_bytes(getDateTime.group(4),byteorder='little')
-      Day =     int.from_bytes(getDateTime.group(5),byteorder='little')
-      Year =    int.from_bytes(getDateTime.group(6),byteorder='little') + 2000
-      Time = "{:02d}:{:02d}".format(Hours, Minutes)
-      setDateTime(Time)
-
-##+ now.strftime("%H:%M"))
+      setDateTimeFromCode(getDateTime)
 
