@@ -1,9 +1,13 @@
 #! /usr/local/bin/python3
 # vim: set fileencoding=utf-8 autoindent expandtab tabstop=2 shiftwidth=2 softtabstop=2 :
 
-import string, time, sys, re, smbus, subprocess
+import string, time, sys, re, smbus, subprocess, datetime
 
-from display import *
+from disp_config import *
+
+mode = sys.argv[1] # Could be console or LCD
+if mode == 'LCD':
+  from display import *
 
 def hex2deg(n=''):
   value = int(int(n,16)/256)
@@ -24,7 +28,10 @@ def deg2HMS(ra='', dec='', round=True):
       decS = int((abs((dec-deg)*60)-decM)*60)
     else:
       decS = (abs((dec-deg)*60)-decM)*60
-    DEC = "{}{:02d}ß{:02d}'{:02d}\"".format(ds, deg, decM, decS)
+    if mode == 'LCD':
+      DEC = "{}{:02d}ß{:02d}'{:02d}\"".format(ds, deg, decM, decS)
+    else:
+      DEC = "{}{:02d}°{:02d}'{:02d}\"".format(ds, deg, decM, decS)
   if ra:
     if str(ra)[0] == '-':
       rs, ra = '-', abs(ra)
@@ -109,7 +116,8 @@ def loopDecode():
     print("Dec:",decode(dec=hexDec))
 
 if __name__ == '__main__':
-  lcd_init()
+  if mode == 'LCD':
+    lcd_init()
   myFile = sys.stdin
   for chunk in each_chunk(myFile, separator='#'):
     getPosString = re.compile(r"e([A-F0-9\/]{8})\,([A-F,0-9]{8})")
@@ -121,7 +129,10 @@ if __name__ == '__main__':
       Dec    = decode(dec=hexDec)
       #  print( ' RA:' + str(RA)  )
       #  print( 'Dec:' + str(Dec) )
-      displayLCD(ra=RA,dec=Dec)
+      if mode == 'LCD':
+        displayLCD(ra=RA,dec=Dec)
+      else:
+        displayConsole(ra=RA,dec=Dec,labels='long')
     getDateTime = re.match(b'^\x48([\0-\xFF])([\0-\xFF])([\0-\xFF])([\0-\xFF])([\0-\xFF])([\0-\xFF])([\0-\xFF])([\0-\xFF])',chunk.encode())
     if getDateTime:
       setDateTimeFromCode(getDateTime)
