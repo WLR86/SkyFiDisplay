@@ -55,12 +55,12 @@ def decode(ra='',dec='',round=False):
   if dec:
     return deg2HMS(dec=hex2deg(dec))
 
-def displayConsole(ra='',dec='',labels='short'):
+def displayConsole(ra='',dec=''):
   now = datetime.datetime.now()
-  if labels == 'none':
+  if LABELS_FORMAT == 'none':
     print( ' ' + ra + ' ')
     print( dec + ' ' )
-  elif labels == 'short':
+  elif LABELS_FORMAT == 'short':
     print( u' α=  ' + ra + '   '  )
     print( u' δ= ' + dec + '   ' )
   else:
@@ -101,7 +101,7 @@ def setDateTime(dateTime):
 def setDateTimeFromCode(getDateTime):
   t = [0,0,0,0,0,0]
   for x in range(1,7):
-    print(x)
+    #  print(x)
     t.append(int.from_bytes(getDateTime.group(x),byteorder='little'))
   currentDateTime = "{:04d}-{:02d}-{:02d} {:02d}:{:02d}:{:02d}".format(t[6], t[5], t[4], t[1], t[2], t[3])
   setDateTime(dateTime=currentDateTime)
@@ -127,12 +127,10 @@ if __name__ == '__main__':
       hexDec = getPos.group(2)
       RA     = decode(ra=hexRA)
       Dec    = decode(dec=hexDec)
-      #  print( ' RA:' + str(RA)  )
-      #  print( 'Dec:' + str(Dec) )
       if mode == 'LCD':
         displayLCD(ra=RA,dec=Dec)
       else:
-        displayConsole(ra=RA,dec=Dec,labels='long')
+        displayConsole(ra=RA,dec=Dec)
     getDateTime = re.match(b'^\x48([\0-\xFF])([\0-\xFF])([\0-\xFF])([\0-\xFF])([\0-\xFF])([\0-\xFF])([\0-\xFF])([\0-\xFF])',chunk.encode())
     if getDateTime:
       setDateTimeFromCode(getDateTime)
