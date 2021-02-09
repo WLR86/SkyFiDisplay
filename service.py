@@ -1,5 +1,5 @@
 #!/usr/bin/python3
-# vim: set fileencoding=utf-8 autoindent expandtab tabstop=2 shiftwidth=2 softtabstop=2 :
+# vim: set fileencoding=utf-8 autoindent expandtab tabstop=2 shiftwidth=2 softtabstop=2 filetype=python :
 
 import subprocess,os,time,pexpect,logging,re
 
@@ -42,7 +42,7 @@ def getPosFromSynScan():
 def main():
   lcd_init()
   lcd_string('SkyFi+DSC Disp ', LCD_LINE_1)
-  lcd_string('(C) 2018 Weetos', LCD_LINE_2)
+  lcd_string('(C) 2021 Weetos', LCD_LINE_2)
   time.sleep(5)
   while True:
     # set an interrupt on a falling edge and wait for it to happen

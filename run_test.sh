@@ -14,5 +14,5 @@ if [ -f $file ]; then
 else
 
 	# Use a loop of fake data
-	clear; echo; echo; ./emulate_stream.py | python3 ./SynScanCoords.py $out
+	clear; echo; echo; ./emulate_stream.py | ./SynScanCoords.py $out
 fi
