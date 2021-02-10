@@ -56,16 +56,17 @@ def decode(ra='',dec='',round=False):
     return deg2HMS(dec=hex2deg(dec))
 
 def displayConsole(ra='',dec=''):
-  now = datetime.datetime.now()
+  currentTime = time.strftime('%H:%M')
+  currentDate = time.strftime('%d/%m')
   if LABELS_FORMAT == 'none':
     print( ' ' + ra + ' ')
     print( dec + ' ' )
   elif LABELS_FORMAT == 'short':
-    print( u' α=  ' + ra + '   '  )
-    print( u' δ= ' + dec + '   ' )
+    print( u' α=  ' + ra + ' ' + currentTime )
+    print( u' δ= ' + dec + ' ' + currentDate )
   else:
-    print( u' RA=  ' + ra + '     ')
-    print( u'Dec= ' + dec + '     ')
+    print( u' RA=  ' + ra + ' ' + currentTime )
+    print( u'Dec= ' + dec + ' ' + currentDate )
   sys.stdout.write( u"\u001b[2A" )
   sys.stdout.write( u"\u001b[16D" )
   # This timer is aimed at slowing down the output when simulating data from a
