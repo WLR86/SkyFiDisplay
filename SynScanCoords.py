@@ -58,15 +58,19 @@ def decode(ra='',dec='',round=False):
 def displayConsole(ra='',dec=''):
   currentTime = time.strftime('%H:%M')
   currentDate = time.strftime('%d/%m')
+
+  line1 = ' ' + ra + ' ' + currentTime
+  line2 = dec + ' ' + currentDate
+
   if LABELS_FORMAT == 'none':
-    print( ' ' + ra + ' ')
-    print( dec + ' ' )
+    print( line1 )
+    print( line2 )
   elif LABELS_FORMAT == 'short':
-    print( u' α=  ' + ra + ' ' + currentTime )
-    print( u' δ= ' + dec + ' ' + currentDate )
+    print( u' α= ' + line1 )
+    print( u' δ= ' + line2 )
   else:
-    print( u' RA=  ' + ra + ' ' + currentTime )
-    print( u'Dec= ' + dec + ' ' + currentDate )
+    print( u' RA= ' + line1 )
+    print( u'Dec= ' + line2 )
   sys.stdout.write( u"\u001b[2A" )
   sys.stdout.write( u"\u001b[16D" )
   # This timer is aimed at slowing down the output when simulating data from a
@@ -76,8 +80,9 @@ def displayConsole(ra='',dec=''):
 
 def displayLCD(ra='',dec=''):
     currentTime = time.strftime('%H:%M')
+    currentDate = time.strftime('%d/%m')
     lcd_string(' ' + ra + ' ' + currentTime,LCD_LINE_1)
-    lcd_string(dec + ' J2000' ,LCD_LINE_2)
+    lcd_string(dec + ' ' + currentDate,LCD_LINE_2)
 
 def each_chunk(stream, separator):
   buffer = ''
@@ -102,7 +107,6 @@ def setDateTime(dateTime):
 def setDateTimeFromCode(getDateTime):
   t = [0,0,0,0,0,0]
   for x in range(1,7):
-    #  print(x)
     t.append(int.from_bytes(getDateTime.group(x),byteorder='little'))
   currentDateTime = "{:04d}-{:02d}-{:02d} {:02d}:{:02d}:{:02d}".format(t[6], t[5], t[4], t[1], t[2], t[3])
   setDateTime(dateTime=currentDateTime)
