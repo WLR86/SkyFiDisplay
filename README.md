@@ -26,3 +26,14 @@ U is the day.
 V is the year (century assumed as 20).
 W is the offset from GMT for the time zone. Note: if zone is negative, use 256-zone.
 X is 1 to enable Daylight Savings and 0 for Standard Time.
+
+# Ideas and links
+
+## Sky-Watcher SynScan protocol
+https://inter-static.skywatcher.com/downloads/synscanserialcommunicationprotocol_version33.pdf
+
+## Plate solving
+https://www.qhyccd.com/bbs/index.php?topic=4209.0
+
+## Similar project
+https://github.com/iscrow/Astra
