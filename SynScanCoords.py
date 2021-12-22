@@ -29,9 +29,9 @@ def deg2HMS(ra='', dec='', round=True):
     else:
       decS = (abs((dec-deg)*60)-decM)*60
     if mode == 'LCD':
-      DEC = "{}{:02d}ß{:02d}'{:02d}\"".format(ds, deg, decM, decS)
+      DEC = "{}{:03d}ß{:02d}'{:02d}\"".format(ds, deg, decM, decS)
     else:
-      DEC = "{}{:02d}°{:02d}'{:02d}\"".format(ds, deg, decM, decS)
+      DEC = "{}{:03d}°{:02d}'{:02d}\"".format(ds, deg, decM, decS)
   if ra:
     if str(ra)[0] == '-':
       rs, ra = '-', abs(ra)
@@ -59,18 +59,18 @@ def displayConsole(ra='',dec=''):
   currentTime = time.strftime('%H:%M')
   currentDate = time.strftime('%d/%m')
 
-  line1 = ' ' + ra + ' ' + currentTime
-  line2 = dec + ' ' + currentDate
+  line1 = ' ' + ra + ' ' + currentTime + ' '
+  line2 = dec + ' ' + currentDate + ' '
 
   if LABELS_FORMAT == 'none':
     print( line1 )
     print( line2 )
   elif LABELS_FORMAT == 'short':
     print( u' α= ' + line1 )
-    print( u' δ= ' + line2 )
+    print( u' δ=' + line2 )
   else:
     print( u' RA= ' + line1 )
-    print( u'Dec= ' + line2 )
+    print( u'Dec=' + line2 )
   sys.stdout.write( u"\u001b[2A" )
   sys.stdout.write( u"\u001b[16D" )
   # This timer is aimed at slowing down the output when simulating data from a
@@ -81,8 +81,8 @@ def displayConsole(ra='',dec=''):
 def displayLCD(ra='',dec=''):
     currentTime = time.strftime('%H:%M')
     currentDate = time.strftime('%d/%m')
-    lcd_string(' ' + ra + ' ' + currentTime,LCD_LINE_1)
-    lcd_string(dec + ' ' + currentDate,LCD_LINE_2)
+    lcd_string(' ' + ra + ' ' + currentTime,LCD_LINE_1) + ' '
+    lcd_string(dec + ' ' + currentDate,LCD_LINE_2) + ' '
 
 def each_chunk(stream, separator):
   buffer = ''

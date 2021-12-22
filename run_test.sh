@@ -9,10 +9,9 @@ else
 fi
 
 # Use actual captured data
-if [ -f $file ]; then
+if [ -f "$file" ]; then
 	clear; echo; echo; cat $file | ./SynScanCoords.py $out
 else
-
 	# Use a loop of fake data
 	clear; echo; echo; ./emulate_stream.py | ./SynScanCoords.py $out
 fi
