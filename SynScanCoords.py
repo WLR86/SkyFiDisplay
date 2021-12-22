@@ -59,30 +59,30 @@ def displayConsole(ra='',dec=''):
   currentTime = time.strftime('%H:%M')
   currentDate = time.strftime('%d/%m')
 
-  line1 = ' ' + ra + ' ' + currentTime + ' '
-  line2 = dec + ' ' + currentDate + ' '
+  line1 = '  ' + ra + '' + currentTime + ' '
+  line2 = dec + '' + currentDate + ' '
 
   if LABELS_FORMAT == 'none':
     print( line1 )
     print( line2 )
   elif LABELS_FORMAT == 'short':
-    print( u' α= ' + line1 )
+    print( u' α=' + line1 )
     print( u' δ=' + line2 )
   else:
-    print( u' RA= ' + line1 )
+    print( u' RA=' + line1 )
     print( u'Dec=' + line2 )
   sys.stdout.write( u"\u001b[2A" )
   sys.stdout.write( u"\u001b[16D" )
   # This timer is aimed at slowing down the output when simulating data from a
-  # dump file - Remove this on production
-  time.sleep(0.05)
+  # dump file - Not needed when outputing to LCD
+  time.sleep(0.01)
   sys.stdout.flush()
 
 def displayLCD(ra='',dec=''):
     currentTime = time.strftime('%H:%M')
     currentDate = time.strftime('%d/%m')
-    lcd_string(' ' + ra + ' ' + currentTime,LCD_LINE_1) + ' '
-    lcd_string(dec + ' ' + currentDate,LCD_LINE_2) + ' '
+    lcd_string(' ' + ra + ' ' + currentTime,LCD_LINE_1)
+    lcd_string(dec + ' ' + currentDate,LCD_LINE_2)
 
 def each_chunk(stream, separator):
   buffer = ''
