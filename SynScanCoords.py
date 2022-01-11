@@ -59,23 +59,25 @@ def displayConsole(ra='',dec=''):
   currentTime = time.strftime('%H:%M')
   currentDate = time.strftime('%d/%m')
 
-  line1 = '  ' + ra + '' + currentTime + ' '
-  line2 = dec + '' + currentDate + ' '
+  line1 = '  ' + ra + '' + currentTime
+  line2 = dec + '' + currentDate
 
   if LABELS_FORMAT == 'none':
-    print( line1 )
-    print( line2 )
+    print( u'\u250c' + u'\u2500'*16 + u'\u2510' )
+    print( u'\u2502' + line1 + u'\u2502' )
+    print( u'\u2502' + line2 + u'\u2502' )
+    print( u'\u2514' + u'\u2500'*16 + u'\u2518' )
   elif LABELS_FORMAT == 'short':
     print( u' α=' + line1 )
     print( u' δ=' + line2 )
   else:
     print( u' RA=' + line1 )
     print( u'Dec=' + line2 )
-  sys.stdout.write( u"\u001b[2A" )
+  sys.stdout.write( u"\u001b[4A" )
   sys.stdout.write( u"\u001b[16D" )
   # This timer is aimed at slowing down the output when simulating data from a
   # dump file - Not needed when outputing to LCD
-  time.sleep(0.01)
+  time.sleep(0.025)
   sys.stdout.flush()
 
 def displayLCD(ra='',dec=''):
