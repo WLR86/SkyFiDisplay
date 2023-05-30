@@ -42,7 +42,7 @@ def getPosFromSynScan():
 def main():
   lcd_init()
   lcd_string('SkyFi+DSC Disp ', LCD_LINE_1)
-  lcd_string('(C) 2021 Weetos', LCD_LINE_2)
+  lcd_string('(C) 2023 Weetos', LCD_LINE_2)
   time.sleep(5)
   while True:
     # set an interrupt on a falling edge and wait for it to happen
