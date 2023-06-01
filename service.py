@@ -1,7 +1,12 @@
 #!/usr/bin/python3
-# vim: set fileencoding=utf-8 autoindent expandtab tabstop=2 shiftwidth=2 softtabstop=2 filetype=python :
+# vim: set fileencoding=utf-8 autoindent expandtab tabstop=4 shiftwidth=4 softtabstop=4 filetype=python :
 
-import subprocess,os,time,pexpect,logging,re
+import subprocess
+import os
+import time
+import pexpect
+import logging
+import re
 
 from display import *
 from SynScanCoords import *
@@ -9,7 +14,7 @@ from SynScanCoords import *
 # the following settings should
 # be stored in a dedicated file
 modeFile = '/tmp/mode'
-mode='appdriven'
+mode = 'appdriven'
 host = 'localhost'
 port = '4030'
 snoopRXTXCmd = '/bin/tailf /tmp/tb | /home/pi/SkyFiDisplay/SynScanCoords.py'
@@ -17,22 +22,24 @@ snoopRXTXCmd = '/bin/tailf /tmp/tb | /home/pi/SkyFiDisplay/SynScanCoords.py'
 LOG = "/tmp/lcd.log"
 logging.basicConfig(filename=LOG, filemode="w", level=logging.DEBUG)
 
-def getDateTimeFromSynScan(H=host,P=port):
-  child = pexpect.spawn('nc %s %s'%(H, P))
-  # It's now ok to get date and time from the SynScan ('h' query)
-  child.sendline('h\x04')
-  child.expect('#')
-  chunk = child.before.decode('utf-8').replace('\r\n','')
-  DateTime = re.match(b'^\x68([\0-\xFF])([\0-\xFF])([\0-\xFF])([\0-\xFF])([\0-\xFF])([\0-\xFF])([\0-\xFF])([\0-\xFF])',chunk.encode())
-  return DateTime
+
+def getDateTimeFromSynScan(H=host, P=port):
+    child = pexpect.spawn('nc %s %s' % (H, P))
+    # It's now ok to get date and time from the SynScan ('h' query)
+    child.sendline('h\x02')
+    child.expect('#')
+    chunk = child.before.decode('utf-8').replace('\r\n', '')
+    DateTime = re.match(b'^\x68([\0-\xFF])([\0-\xFF])([\0-\xFF])([\0-\xFF])([\0-\xFF])([\0-\xFF])([\0-\xFF])([\0-\xFF])', chunk.encode())
+    return DateTime
+
 
 def getPosFromSynScan():
-      child.sendline ('e\x04')
-      child.expect ('#')
-      chunk = child.before.decode('utf-8').replace('\r\n','')
-      getPosString = re.compile(r"e([A-F0-9\/]{8})\,([A-F,0-9]{8})#")
-      getPos = getPosString.match(chunk)
-      if getPos:
+    child.sendline('e\x04')
+    child.expect('#')
+    chunk = child.before.decode('utf-8').replace('\r\n','')
+    getPosString = re.compile(r"e([A-F0-9\/]{8})\,([A-F,0-9]{8})#")
+    getPos = getPosString.match(chunk)
+    if getPos:
         hexRA  = getPos.group(1)
         hexDec = getPos.group(2)
         RA     = decode(ra=hexRA)
