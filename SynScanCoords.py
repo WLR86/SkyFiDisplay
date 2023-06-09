@@ -1,11 +1,23 @@
 #! /usr/local/bin/python3
-# vim: set fileencoding=utf-8 autoindent expandtab tabstop=2 shiftwidth=2 softtabstop=2 filetype=python :
+# vim: set fileencoding=utf-8 autoindent expandtab tabstop=2 shiftwidth=2 softtabstop=2 filetype=python : # nora
 
-import string, time, sys, re, smbus, subprocess, datetime
+import string
+import time
+import sys
+import re
+import smbus
+import subprocess
+import datetime
 
-from disp_config import *
+from disp_config import LCD_WIDTH, LCD_LINE_1, LCD_LINE_3, LCD_LINE_4
+from disp_config import LCD_BACKLIGHT, LCD_CMD, ENABLE, E_PULSE
+from disp_config import E_DELAY, LABELS_FORMAT, CHUNK_SIZE
 
-mode = sys.argv[1]  # Could be console or LCD
+mode = 'console'
+
+if (len(sys.argv)) > 1:
+    mode = sys.argv[1]  # Could be console or LCD
+
 if mode == "LCD":
     from display import *
 

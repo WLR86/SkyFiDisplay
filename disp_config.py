@@ -1,7 +1,7 @@
 # /usr/bin/python3
 
 # could be none, short (alpha, delta) or long (RA DEC)
-LABELS_FORMAT = "short"
+LABELS_FORMAT = "other"
 
 CHUNK_SIZE = 20
 
