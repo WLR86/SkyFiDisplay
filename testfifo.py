@@ -7,6 +7,7 @@ import sys
 import re
 
 LABELS_FORMAT = "other"
+LCD_WIDTH = 16
 mode = "console"
 
 try:
@@ -15,6 +16,9 @@ try:
         try:
             bus.read_byte(device)
             print(hex(device))
+            from display import lcd_init, lcd_string
+            mode = "LCD"
+            lcd_init()
         except IOError.e:
             pass
 except FileNotFoundError:
@@ -102,8 +106,8 @@ def displayConsole(ra="", dec=""):
 
 def display(line1, line2):
     if mode == "LCD":
-        display.lcd_string(line1)
-        display.lcd_string(line2)
+        lcd_string(line1)
+        lcd_string(line2)
     else:
         print(line1)
         print(line2)
@@ -141,7 +145,9 @@ async def main():
     file = "fifo"
     display("SkyFi DSC", "(C) 2023 WLR")
     time.sleep(5)
-    display("  Waiting for   ", "    Data ...    ")
+    str1 = "Waiting for"
+    str2 = "Data ..."
+    display(str1.center(LCD_WIDTH), str2.center(LCD_WIDTH))
 
     while True:
         try:
