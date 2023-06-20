@@ -37,3 +37,6 @@ https://www.qhyccd.com/bbs/index.php?topic=4209.0
 
 ## Similar project
 https://github.com/iscrow/Astra
+
+# Multiple network context : if none of known SSID is there, then create an AccessPoint with a DHCP server
+https://raspberrypi.stackexchange.com/questions/100195/automatically-create-hotspot-if-no-network-is-available
