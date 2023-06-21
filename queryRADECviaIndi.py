@@ -1,37 +1,33 @@
 import time
+import configParser
 from pyindi_client import INDIClient
 import smbus2
 
-# Adresse IP et port du serveur INDI
-INDI_SERVER_IP = "localhost"
-INDI_SERVER_PORT = 7624
-LCD_WIDTH = 16
+cfg = configParser.ConfigParser()
+
+cfg.read('config.ini')
+
+indi = cfg['INDI']
+lcd = cfg['LCD']
+
 
 # Initialisation du client INDI
 indiclient = INDIClient()
-indiclient.set_server(INDI_SERVER_IP, INDI_SERVER_PORT)
+indiclient.set_server(indi['server'], indi['port'])
 
 # Connexion au serveur INDI
 indiclient.connect()
 
-# Nom du driver du télescope
-telescope_driver = "Telescope Simulator"
-
-# Intervalles de mise à jour des coordonnées (en secondes)
-update_interval = 5
-
 # Initialisation de l'afficheur LCD via I2C (vous devez avoir la
 # bibliothèque smbus2 installée)
-lcd_address = 0x27  # Adresse I2C de l'afficheur LCD
-bus = smbus2.SMBus(1)  # Numéro du bus I2C (1 pour Raspberry Pi 3+)
+bus = smbus2.SMBus(lcd['bus'])  # Numéro du bus I2C (1 pour Raspberry Pi 3+)
 
 
 def lcd_command(cmd):
-    bus.write_byte(lcd_address, cmd)
-
+    bus.write_byte(lcd['i2c_addr'], cmd)
 
 def lcd_data(data):
-    bus.write_byte_data(lcd_address, 0x40, data)
+    bus.write_byte_data(lcd['i2c_addr'], 0x40, data)
 
 
 def lcd_init():
@@ -84,11 +80,11 @@ try:
     time.sleep(5)
     str1 = "Waiting for"
     str2 = "Data ..."
-    display(str1.center(LCD_WIDTH), str2.center(LCD_WIDTH))
+    display(str1.center(lcd['width']), str2.center(lcd['width']))
 
     while True:
         # Récupération des coordonnées RA et DEC
-        telescope = indiclient.get_device(telescope_driver)
+        telescope = indiclient.get_device(indi['telescope_driver'])
         ra = telescope.get_float("EQUATORIAL_EOD_COORD", "RA")
         dec = telescope.get_float("EQUATORIAL_EOD_COORD", "DEC")
 
@@ -101,7 +97,7 @@ try:
         lcd_write_string(2, f"DEC: {dec_str}")
 
         # Attente avant la prochaine mise à jour
-        time.sleep(update_interval)
+        time.sleep(indi['update_interval'])
 
 except KeyboardInterrupt:
     pass
