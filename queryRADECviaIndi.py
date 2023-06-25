@@ -143,3 +143,4 @@ except KeyboardInterrupt:
 
 # Déconnexion du serveur INDI
 indiclient.disconnectServer()
+LCD.clear()
