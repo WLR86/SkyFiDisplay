@@ -3,7 +3,7 @@ import time
 
 
 class LCD:
-    def __init__(self, pi_rev=2, i2c_addr=0x3F, backlight=True):
+    def __init__(self, pi_rev=2, i2c_addr=0x27, backlight=True):
 
         # device constants
         self.I2C_ADDR = i2c_addr
