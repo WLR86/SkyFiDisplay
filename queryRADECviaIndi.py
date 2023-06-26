@@ -25,7 +25,7 @@ class IndiClient(PyIndi.BaseClient):
         global dmonitor
         # We catch the monitored device
         dmonitor = d
-        print("New device ", d.getDeviceName())
+        # print("New device ", d.getDeviceName())
 
     def newProperty(self, p):
         global monitored
@@ -33,7 +33,7 @@ class IndiClient(PyIndi.BaseClient):
         # we catch the "CONNECTION" property of the monitored device
         if p.getDeviceName() == monitored and p.isNameMatch("CONNECTION"):
             cmonitor = PyIndi.PropertySwitch(p)
-        print("New property ", p.getName(), " for device ", p.getDeviceName())
+        # print("New property ", p.getName(), " for device ", p.getDeviceName())
 
     def updateProperty(self, p):
         global newval
