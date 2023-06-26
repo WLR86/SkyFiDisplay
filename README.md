@@ -44,6 +44,13 @@ https://www.raspberryconnect.com/projects/65-raspberrypi-hotspot-accesspoints/15
 
 # Indiserver
 
+Todo : 
+- monitor log entries ('INFO') so we can detect when a goto command is completed
+- create custom LCD characters we may need eg °
+- create services that takes care of launching indiserver, drivers, indi-web and ou script
+
+
+
 apt install python3-pip swig libindi-dev python3-setuptools python3-dev
 pip3 install indiweb
 

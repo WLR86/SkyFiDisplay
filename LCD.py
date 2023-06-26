@@ -1,6 +1,7 @@
 import smbus
 import time
 
+degree = [0x0B, 0x12, 0x12, 0x0B, 0x00, 0x00, 0x00, 0x00]
 
 class LCD:
     def __init__(self, pi_rev=2, i2c_addr=0x27, backlight=True):
@@ -46,7 +47,7 @@ class LCD:
         self.lcd_byte(0x28, self.LCD_CMD)  # 101000 Data length, number of lines, font size
         self.lcd_byte(0x01, self.LCD_CMD)  # 000001 Clear display
 
-    def lcd_byte(self, bits, mode):
+    def lcd_byte(self, bits, mode=1):
         # Send byte to data pins
         # bits = data
         # mode = 1 for data, 0 for command
@@ -61,6 +62,10 @@ class LCD:
         # Low bits
         self.bus.write_byte(self.I2C_ADDR, bits_low)
         self.toggle_enable(bits_low)
+
+    def lcd_write_four_bits(self, data):
+        self.bus.write_cmd(data | LCD_BACKLIGHT)
+        # self.lcd_strobe(data)
 
     def toggle_enable(self, bits):
         time.sleep(self.E_DELAY)
@@ -94,3 +99,14 @@ class LCD:
             self.bus.write_byte(self.I2C_ADDR, 0x08)
         else:
             self.bus.write_byte(self.I2C_ADDR, 0x00)
+
+    def lcd_write_char(self, charvalue, mode=1):
+	    self.lcd_write_four_bits(mode | (charvalue & 0xF0))
+	    self.lcd_write_four_bits(mode | ((charvalue << 4) & 0xF0))
+
+    def custom_char(self, chardata):
+	    self.lcd_byte(0x40)
+	    for line in chardata:
+	        self.lcd_byte(line)
+	    self.lcd_write_char(0x80)
+
