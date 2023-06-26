@@ -88,3 +88,10 @@ class LCD:
     def clear(self):
         # clear LCD display
         self.lcd_byte(0x01, self.LCD_CMD)
+
+	def backlight(switch):
+		if switch == "On":
+			self.bus.write_byte(self.I2C_ADDR, 0x08)
+        else:
+			self.bus.write_byte(self.I2C_ADDR, 0x00)
+
