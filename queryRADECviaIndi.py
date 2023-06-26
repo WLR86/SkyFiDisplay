@@ -3,7 +3,7 @@ import configparser
 import PyIndi
 import LCD
 
-LCD = LCD.LCD()
+LCD = LCD.LCD(2, 0x27, True)
 
 cfg = configparser.ConfigParser()
 
@@ -55,39 +55,6 @@ indiclient.setServer(indi['server'], int(indi['port']))
 # Connexion au serveur INDI
 indiclient.connectServer()
 
-# Initialisation de l'afficheur LCD via I2C (vous devez avoir la
-# bibliothèque smbus installée)
-# bus = smbus.SMBus(1)  # Numéro du bus I2C (1 pour Raspberry Pi 3+)
-#
-#
-# def lcd_command(cmd):
-#     bus.write_byte(0x27, cmd)
-#
-# def lcd_data(data):
-#     bus.write_byte_data(0x27, 0x40, data)
-#
-#
-# def lcd_init():
-#     lcd_command(0x33)  # Initialisation
-#     lcd_command(0x32)  # Initialisation
-#     lcd_command(0x06)  # Curseur vers la droite
-#     lcd_command(0x0C)  # Afficher le curseur
-#     lcd_command(0x28)  # 2 lignes, affichage 5x8
-#
-#
-# def lcd_clear():
-#     lcd_command(0x01)  # Effacer l'affichage
-#
-#
-# def lcd_write_string(line, string):
-#     if line == 1:
-#         lcd_command(0x80)
-#     elif line == 2:
-#         lcd_command(0xC0)
-#
-#     for char in string:
-#         lcd_data(ord(char))
-
 
 def format_coordinates(ra, dec):
     ra_hours = int(ra)
@@ -121,11 +88,8 @@ try:
 
     while True:
         # Récupération des coordonnées RA et DEC
-        telescope = indiclient.getDevice('Telescope Simulator')
+        telescope = indiclient.getDevice(cfg.get('INDI', 'telescope_driver'))
         radec = telescope.getNumber("EQUATORIAL_EOD_COORD")
-        #  ra = telescope.getNumber("EQUATORIAL_EOD_COORD", "RA")
-        #  dec = telescope.getNumber("EQUATORIAL_EOD_COORD", "DEC"
-        #  pprint(getmembers(radec))
         ra = radec[0].value
         dec = radec[1].value
 
@@ -137,8 +101,8 @@ try:
         LCD.message(f"{ra_str}".rjust(lcd_width), 1)
         LCD.message(f"{dec_str}".rjust(lcd_width), 2)
 
-        # Attente avant la prochaine mise à jour
-        time.sleep(1)
+        time.sleep(cfg.getint('INDI', 'update_interval'))
+
 
 except KeyboardInterrupt:
     pass
