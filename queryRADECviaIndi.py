@@ -1,7 +1,6 @@
 import time
 import configparser
 import PyIndi
-import smbus
 import LCD
 
 LCD = LCD.LCD()
@@ -10,11 +9,13 @@ cfg = configparser.ConfigParser()
 
 cfg.read('config.ini')
 
-server = cfg.get('INDI','server')
-port = cfg.getint('INDI','port')
-lcd_width = cfg.getint('LCD','width')
+server = cfg.get('INDI', 'server')
+port = cfg.getint('INDI', 'port')
+lcd_width = cfg.getint('LCD', 'width')
+
 indi = cfg['INDI']
 lcd = cfg['LCD']
+
 
 class IndiClient(PyIndi.BaseClient):
     def __init__(self):
@@ -43,14 +44,12 @@ class IndiClient(PyIndi.BaseClient):
             prop = nvp
             newval = True
 
+
 # Initialisation du client INDI
 indiclient = IndiClient()
 
-# indi['port'] = 7624
-# indi = { 'server':'localhost', 'port': 7624, 'telescope_driver': 'Telescope Simulator', 'update_interval': 5 }
 monitored = indi['telescope_driver']
 indiclient.setServer(indi['server'], int(indi['port']))
-# indiclient.setServer("localhost", 7624)
 
 
 # Connexion au serveur INDI
@@ -59,33 +58,33 @@ indiclient.connectServer()
 # Initialisation de l'afficheur LCD via I2C (vous devez avoir la
 # bibliothèque smbus installée)
 # bus = smbus.SMBus(1)  # Numéro du bus I2C (1 pour Raspberry Pi 3+)
-# 
-# 
+#
+#
 # def lcd_command(cmd):
 #     bus.write_byte(0x27, cmd)
-# 
+#
 # def lcd_data(data):
 #     bus.write_byte_data(0x27, 0x40, data)
-# 
-# 
+#
+#
 # def lcd_init():
 #     lcd_command(0x33)  # Initialisation
 #     lcd_command(0x32)  # Initialisation
 #     lcd_command(0x06)  # Curseur vers la droite
 #     lcd_command(0x0C)  # Afficher le curseur
 #     lcd_command(0x28)  # 2 lignes, affichage 5x8
-# 
-# 
+#
+#
 # def lcd_clear():
 #     lcd_command(0x01)  # Effacer l'affichage
-# 
-# 
+#
+#
 # def lcd_write_string(line, string):
 #     if line == 1:
 #         lcd_command(0x80)
 #     elif line == 2:
 #         lcd_command(0xC0)
-# 
+#
 #     for char in string:
 #         lcd_data(ord(char))
 
@@ -146,5 +145,7 @@ except KeyboardInterrupt:
 
 # Déconnexion du serveur INDI
 indiclient.disconnectServer()
-display('shutting down'.ljust(lcd_width), 'monitoring...'.rjust(lcd_width))
+display('Shutting down'.ljust(lcd_width), 'monitoring...'.rjust(lcd_width))
+time.sleep(3)
 LCD.clear()
+LCD.backlight('off')
