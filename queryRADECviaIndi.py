@@ -10,6 +10,9 @@ cfg = configparser.ConfigParser()
 
 cfg.read('config.ini')
 
+server = cfg.get('INDI','server')
+port = cfg.getint('INDI','port')
+lcd_width = cfg.getint('LCD','width')
 indi = cfg['INDI']
 lcd = cfg['LCD']
 
@@ -132,8 +135,8 @@ try:
 
         # Affichage des coordonnées sur le LCD
         # lcd_clear()
-        LCD.message(f"{ra_str}".rjust(16),1)
-        LCD.message(f"{dec_str}".rjust(16),2)
+        LCD.message(f"{ra_str}".rjust(lcd_width), 1)
+        LCD.message(f"{dec_str}".rjust(lcd_width), 2)
 
         # Attente avant la prochaine mise à jour
         time.sleep(1)
@@ -143,4 +146,5 @@ except KeyboardInterrupt:
 
 # Déconnexion du serveur INDI
 indiclient.disconnectServer()
+display('shutting down'.ljust(lcd_width), 'monitoring...'.rjust(lcd_width))
 LCD.clear()
