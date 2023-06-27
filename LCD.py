@@ -1,7 +1,7 @@
 import smbus
 import time
 
-degree = [0x0B, 0x12, 0x12, 0x0B, 0x00, 0x00, 0x00, 0x00]
+
 
 class LCD:
     def __init__(self, pi_rev=2, i2c_addr=0x27, backlight=True):
@@ -109,4 +109,9 @@ class LCD:
 	    for line in chardata:
 	        self.lcd_byte(line)
 	    self.lcd_write_char(0x80)
+
+    def define_custom_char(self, char_index, char_pattern):
+        command = self.LCD_CMD | ((char_index & 0x07) << 3)
+        self.bus.write_i2c_block_data(self.I2C_ADDR, command, char_pattern)
+
 

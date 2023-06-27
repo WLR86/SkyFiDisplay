@@ -5,6 +5,7 @@ import PyIndi
 import LCD
 
 LCD = LCD.LCD(2, 0x27, True)
+degree = [0x0B, 0x12, 0x12, 0x0B, 0x00, 0x00, 0x00, 0x00]
 
 cfg = configparser.ConfigParser()
 
@@ -16,6 +17,8 @@ lcd_width = cfg.getint('LCD', 'width')
 
 indi = cfg['INDI']
 lcd = cfg['LCD']
+
+LCD.define_custom_char(0,degree)
 
 
 class IndiClient(PyIndi.BaseClient):
@@ -56,6 +59,31 @@ indiclient.setServer(indi['server'], int(indi['port']))
 # Connexion au serveur INDI
 indiclient.connectServer()
 
+def deg2HMS(ra="", dec="", round=True):
+    RA, DEC, rs, ds = "", "", "", ""
+    if dec:
+        if int(dec) > 180:
+            dec = dec - 360
+        if str(dec)[0] == "-":
+            ds, dec = "-", abs(dec)
+        else:
+            ds, dec = "+", abs(dec)
+        deg = int(dec)
+        decM = abs(int((dec - deg) * 60))
+        if round:
+            decS = int((abs((dec - deg) * 60) - decM) * 60)
+        else:
+            decS = (abs((dec - deg) * 60) - decM) * 60
+        DEC = "{}{:03d}\x00{:02d}'{:02d}\"".format(ds, deg, decM, decS)
+    if ra:
+        raH = int(ra)
+        raM = int((ra - raH) * 60)
+        raS = int(((ra - raH) * 60 - raM) * 60)
+        RA = "{}{:02d}h{:02d}'{:02d}\"".format(rs, raH, raM, raS)
+    if ra and dec:
+        return (RA, DEC)
+    else:
+        return RA or DEC
 
 def format_coordinates(ra, dec):
     ra_hours = int(ra)
@@ -63,12 +91,12 @@ def format_coordinates(ra, dec):
     ra_seconds = int(((ra - ra_hours) * 60 - ra_minutes) * 60)
 
     dec_degrees = int(dec)
-    dec_minutes = int((dec - dec_degrees) * 60)
-    dec_seconds = int(((dec - dec_degrees) * 60 - dec_minutes) * 60)
+    dec_minutes = abs(int((dec - dec_degrees) * 60))
+    dec_seconds = abs(int(((dec - dec_degrees) * 60 - dec_minutes) * 60))
 
     ra_str = f"{ra_hours:02d}h{ra_minutes:02d}'{ra_seconds:02d}\""
     # dec_str = f"{dec_degrees:02d}ß{dec_minutes:02d}'{dec_seconds:02d}\""
-    dec_str = f"{dec_degrees:02d}\xDF{dec_minutes:02d}'{dec_seconds:02d}\""
+    dec_str = f"{dec_degrees:02d}\x00{dec_minutes:02d}'{dec_seconds:02d}\""
 
     return ra_str, dec_str
 
@@ -99,28 +127,32 @@ try:
         # Récupération des coordonnées RA et DEC
         telescope = indiclient.getDevice(cfg.get('INDI', 'telescope_driver'))
         radec = telescope.getNumber("EQUATORIAL_EOD_COORD")
-        ra = radec[0].value
-        dec = radec[1].value
+        ra, dec = radec[0].value, radec[1].value
         # info = indiclient.
         # print(info[0].getStateAsString())
 
         # Conversion des coordonnées
-        ra_str, dec_str = format_coordinates(ra, dec)
+        # ra_str, dec_str = format_coordinates(ra, dec)
+        ra_str, dec_str = deg2HMS(ra, dec)
 
         # Affichage des coordonnées sur le LCD
         # lcd_clear()
-        LCD.message(f"\xE0 {ra_str}".rjust(lcd_width), 1)
+        LCD.message(f"\xE0   {ra_str}".rjust(lcd_width), 1)
         LCD.message(f"\xE5 {dec_str}".rjust(lcd_width), 2)
-        status = telescope.getText("TELESCOPE_STATUS")
-        status_str = status.getText()
+        # status = telescope.getText("TELESCOPE_STATUS")
+        # status_str = status.getText()
+        # print(telescope.messageQueue(0))
         # print(status_str)
-        messages_blob = telescope.getBLOB("TELESCOPE_MESSAGES")
+        # messages_blob = telescope.getBLOB("TELESCOPE_MESSAGES")
         # if messages_blob:
-        messages_str = messages_blob.getBLOB()
-        print(f"Messages texte : {messages_str}")
+        # print(dir(messages_blob))
+        # messages_str = messages_blob.getText()
+        # print(f"Messages texte : {messages_str}")
 
         time.sleep(cfg.getint('INDI', 'update_interval'))
 
+except IOError:
+    display("Err: can't connect", "to INDIserver")
 
 except KeyboardInterrupt:
     pass
