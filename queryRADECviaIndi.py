@@ -37,7 +37,8 @@ class IndiClient(PyIndi.BaseClient):
         # we catch the "CONNECTION" property of the monitored device
         if p.getDeviceName() == monitored and p.isNameMatch("CONNECTION"):
             cmonitor = PyIndi.PropertySwitch(p)
-        # print("New property ", p.getName(), " for device ", p.getDeviceName())
+        print("New property ", p.getName(),
+              " for device ", p.getDeviceName())
 
     def updateProperty(self, p):
         global newval
@@ -112,13 +113,14 @@ try:
 
     display("SkyFi DSC", "(C) 2023 WLR")
     time.sleep(3)
-    LCD.message(cfg.get('INDI', 'telescope_driver'),2)
+    LCD.message(cfg.get('INDI', 'telescope_driver'), 2)
     time.sleep(2)
+    # Attempt to display what the user needs
+    # SSID, hostname, IP
     hostname = socket.getfqdn()
-    # ipaddress = 
     LCD.message(hostname, 1)
-    time.sleep(2)    
-    
+    time.sleep(2)
+
     str1 = "Waiting for"
     str2 = "Data ..."
     display(str1.center(16), str2.center(16))

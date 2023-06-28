@@ -51,103 +51,20 @@ Todo :
 
 
 
-apt install python3-pip swig libindi-dev python3-setuptools python3-dev
-pip3 install indiweb
+Install INDI from sources instead of deb package (too old)
+Otherwise PyIndi-Client won't compile
 
-pip3 install pyindi-client fails (can't find lindiclient.a)
+# INDIServer (extract from [https://docs.indilib.org/drivers/properties.html])
+All communication in INDI is done by updating properties, so this is a really important part of the tutorial. If you want your driver to do anything at all, you'll need to understand this concept. This is also the longest part of the tutorial, but stick with it, or you're gonna have a bad time.
 
-found that fucking file there : /usr/lib/arm-linux-gnueabihf
-since this piece of junk looks for libs in current directory as well
-I cd'ed there and retried "pip3 install pyindi-client" - and guess what ? now it want something else 
+All properties have a name and a label, as well as a group and state.
 
-    swig -python -v -Wall -c++ -threads -I/usr/include -I/usr/include/libindi -I/usr/local/include/libindi -o indiclientpython_wrap.cpp indiclientpython.i
-    indiclientpython.i:41: Error: Unable to find 'indimacros.h'
-    indiclientpython.i:47: Error: Unable to find 'indiwidgettraits.h'
-    indiclientpython.i:56: Error: Unable to find 'indipropertyview.h'
-    indiclientpython.i:104: Error: Unable to find 'indipropertybasic.h'
-    indiclientpython.i:122: Error: Unable to find 'indipropertytext.h'
-    indiclientpython.i:123: Error: Unable to find 'indipropertynumber.h'
-    indiclientpython.i:124: Error: Unable to find 'indipropertyswitch.h'
-    indiclientpython.i:125: Error: Unable to find 'indipropertylight.h'
-    indiclientpython.i:126: Error: Unable to find 'indipropertyblob.h'
-    indiclientpython.i:196: Error: Unable to find 'indiproperties.h'
-    Language subdirectory: python
-    Search paths:
-       ./
-       /usr/include/
-       /usr/include/libindi/
-       /usr/local/include/libindi/
-       ./swig_lib/python/
-       /usr/share/swig3.0/python/
-       ./swig_lib/
-       /usr/share/swig3.0/
-    Preprocessing...
-    error: command 'swig' failed with exit status 1
+- *name* is the code friendly name of the property.
 
-Ok, looks like we better off code our own python client, since all this piece of shit maybe break anytime if it get to work sometime
+- *label* is the human friendly name of the property.
 
-This going nowhere, since we're running Debian 10, let's first try to upgrade to newer version and see what happens regarding indi
+- *group* is the human friendly name of the tab the property is on. The DefaultDevice class has some nice helpers for commonly used tabs, but feel free to add your own custom tab.
 
-what's follows is just amazingly fun
+Vectors
 
-Ok, let's see - Find latest bookworm debian image file - ok
-Use Balena Etcher on MacOS and write this image to SDCard -> no boot
-Use Balena Etcher on Windows 10 and write this image to SDCard -> no boot
-
-Maybe this image is somehow screwed up so let's try with a older image -> same result
-Maybe this image is somehow screwed up so let's try with a even older image -> same result
-
-Ok Maybe BalenaEtcher is just a piece of shit, seems to be a pattern, everything so far was just fucked up
-
-so back to trying latest bookworm image, using terminal tools on MacOS
-sudo dd if=raspi_1_bookworm.img of=/dev/disk2 bs=1m
-
-So far... so good - let's see if it boots
-
-but before :
-cd /Volumes/RASPIFIRM
-touch ssh
-vi config.txt : add last line "dtoverlay=dwc2"
-vi cmdline.txt add after "rootwait" : modules_load=dwc2,g_ether
-
-and .... still fucking boot : Led is flashing in cycle two rapid flashes and this doesn't seem be documented
-
-I just fucking LOVE all this pile of crap
-
-Ok, so let's try something else, I love wasting time so much
-let's try Raspberry Pi Imager v1.7.5
-this has some interresing features, like being able to decide the hostname, have ssh enabled, being able to add ssh keys, and even enter a SSID and a password so it can join a Wi-Fi network
-
-Well, the system boots, which is by itself a victory, but my DHCP network haven't heard anything from the rpi
-So I edited cmdline.txt and config.txt to add ether gadget feature so I can investigate, noticed there was no ssh file so I created one and restarted
-
-... and boom this time it requested an IP address
-
-So ... back to square one. Debian Bullseye, python3.9, Indi v1.8.8 and pyindi-client v1.9.1
-and well, it still looking for those fucking .h files
-
-pip3 install pyindi-client==0.2.8 => still doing shit
-pip3 install pyindi-client==0.2.4 => totally new shit, it fails now for a whole lot of new fucking reasons, but none of the previous fucking ones
-pip3 install pyindi-client==0.2.6 => takes time, but no errors so far - Oh ok it fails like shit too
-
-sooooooo
-git cloning libs from indi repo
-wgetting tar.gz of release 1.9.1 of pyindi-client
-modifying setup.cfg and setup.py so it gets its fucking libs
-then python3 setup.py install and.... a whole pile of shit, ending nowhere because of a hundred warnings
-each time a new step is achieved, a whole new world of shit appears, each one bigger and deeper than the previous one
-
-
-so let's recap
-Indi is coded like shit, but still seems to work
-Indi-web relies on python, but still seems to work
-pyindi-client may work under some specific conditions (on its dev's computer I guess)
-but in my context : rapsberry pi zero W (because I don't need a fucking Cray One to get what I need to do)
-Debian 10 was working fine using ser2net but is too old to run pyindi-client 1.9.1 because the way it's being built (swag) and the dependencies that can't be satisfied using apt and pip3
-
-Debian Bullseye doesn't seem to boot
-Debian Bookwork doesn't seem to boot
-
-So what ? I have to use a fucking windows laptop ?
-
-
+All properties are vectors (array like object). I'll say that again: ALL PROPERTIES ARE VECTORS. A property vector can have one or more values. All values have a name and a label as well. There are Number, Text, Switch, Light, and BLOB properties.
