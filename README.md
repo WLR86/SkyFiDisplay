@@ -48,11 +48,11 @@ https://circuitdigest.com/microcontroller-projects/interfacing-lcd-with-raspberr
 # Indiserver
 
 Todo : 
-- monitor log entries ('INFO') so we can detect when a goto command is completed
-- create custom LCD characters we may need eg °
-- create services that takes care of launching indiserver, drivers, indi-web and ou script
-- Improve mDNS behavior : most of the time name resolving fails, which was not the cas before
-- verify time and location are being sent and taken into account when skysafari establishes its connection
+- [ ] monitor log entries ('INFO') so we can detect when a goto command is completed
+- [X] create custom LCD characters we may need eg °
+- [ ] create services that takes care of launching indiserver, drivers, indi-web and ou script
+- [ ] Improve mDNS behavior : most of the time name resolving fails, which was not the cas before
+- [ ] verify time and location are being sent and taken into account when skysafari establishes its connection
 
 Install INDI from sources instead of deb package (too old)
 Otherwise PyIndi-Client won't compile
@@ -71,3 +71,7 @@ All properties have a name and a label, as well as a group and state.
 Vectors
 
 All properties are vectors (array like object). I'll say that again: ALL PROPERTIES ARE VECTORS. A property vector can have one or more values. All values have a name and a label as well. There are Number, Text, Switch, Light, and BLOB properties.
+
+# Notes 
+SkySafari first connection is ok, but if later tracking is enabled (like after a goto sequence), connection will fail (at least using the telescope simulator)
+Tests have to be done using SynScan mount, to see if this is reproducible
