@@ -3,10 +3,9 @@ import socket
 import subprocess
 import configparser
 import PyIndi
-import LCD
+import RPLCD
+from RPLCD.i2c import CharLCD
 
-LCD = LCD.LCD(2, 0x27, True)
-degree = [0x0B, 0x12, 0x12, 0x0B, 0x00, 0x00, 0x00, 0x00]
 
 cfg = configparser.ConfigParser()
 
@@ -19,7 +18,13 @@ lcd_width = cfg.getint('LCD', 'width')
 indi = cfg['INDI']
 lcd = cfg['LCD']
 
-LCD.define_custom_char(0,degree)
+LCD = CharLCD(lcd['chip'], int(lcd['i2c_addr'],16))
+
+# Create missing characters
+degree = (0x06, 0x09, 0x09, 0x06, 0x00, 0x00, 0x00, 0x00)
+delta =  (0x00, 0x06, 0x08, 0x0E, 0x11, 0x11, 0x0E, 0x00)
+LCD.create_char(0,degree)
+LCD.create_char(1,delta)
 
 
 class IndiClient(PyIndi.BaseClient):
@@ -76,7 +81,7 @@ def deg2HMS(ra="", dec="", round=True):
             decS = int((abs((dec - deg) * 60) - decM) * 60)
         else:
             decS = (abs((dec - deg) * 60) - decM) * 60
-        DEC = "{}{:03d}\xDF{:02d}'{:02d}\"".format(ds, deg, decM, decS)
+        DEC = "{}{:03d}\x00{:02d}'{:02d}\"".format(ds, deg, decM, decS)
     if ra:
         raH = int(ra)
         raM = int((ra - raH) * 60)
@@ -87,26 +92,15 @@ def deg2HMS(ra="", dec="", round=True):
     else:
         return RA or DEC
 
-def format_coordinates(ra, dec):
-    ra_hours = int(ra)
-    ra_minutes = int((ra - ra_hours) * 60)
-    ra_seconds = int(((ra - ra_hours) * 60 - ra_minutes) * 60)
 
-    dec_degrees = int(dec)
-    dec_minutes = abs(int((dec - dec_degrees) * 60))
-    dec_seconds = abs(int(((dec - dec_degrees) * 60 - dec_minutes) * 60))
-
-    ra_str = f"{ra_hours:02d}h{ra_minutes:02d}'{ra_seconds:02d}\""
-    # dec_str = f"{dec_degrees:02d}ß{dec_minutes:02d}'{dec_seconds:02d}\""
-    dec_str = f"{dec_degrees:02d}\xDF{dec_minutes:02d}'{dec_seconds:02d}\""
-
-    return ra_str, dec_str
-
+def message(string,line):
+    LCD.cursor_pos = (line - 1, 0)
+    LCD.write_string(string)
 
 def display(line1, line2):
-    # LCD.clear()
-    LCD.message(line1, 1)
-    LCD.message(line2, 2)
+    LCD.clear()
+    message(line1, 1)
+    message(line2, 2)
 
 try:
     ssid = subprocess.check_output(['/usr/sbin/iwgetid','-r'], text=True).strip()
@@ -120,17 +114,18 @@ try:
 
     display("SkyFi DSC", "(C) 2023 WLR")
     time.sleep(2)
-    LCD.message(cfg.get('INDI', 'telescope_driver'), 2)
+    message(cfg.get('INDI', 'telescope_driver'), 2)
     time.sleep(2)
-
-    LCD.message("SSID", 1)
-    LCD.message(ssid.rjust(lcd_width), 2)
+    LCD.clear()
+    message("SSID", 1)
+    message(ssid.rjust(lcd_width), 2)
     time.sleep(2)
+    LCD.clear()
     # Attempt to display what the user needs
     # SSID, hostname, IP
     hostname = socket.getfqdn()
-    LCD.message("Hostname", 1)
-    LCD.message(hostname.rjust(lcd_width), 2)
+    message("Hostname", 1)
+    message(hostname.rjust(lcd_width), 2)
     time.sleep(2)
 
     str1 = "Waiting for"
@@ -142,26 +137,11 @@ try:
         telescope = indiclient.getDevice(cfg.get('INDI', 'telescope_driver'))
         radec = telescope.getNumber("EQUATORIAL_EOD_COORD")
         ra, dec = radec[0].value, radec[1].value
-        # info = indiclient.
-        # print(info[0].getStateAsString())
-
-        # Conversion des coordonnées
-        # ra_str, dec_str = format_coordinates(ra, dec)
         ra_str, dec_str = deg2HMS(ra, dec)
 
         # Affichage des coordonnées sur le LCD
-        # lcd_clear()
-        LCD.message(f"\xE0   {ra_str}".rjust(lcd_width), 1)
-        LCD.message(f"\xE5 {dec_str}".rjust(lcd_width), 2)
-        # status = telescope.getText("TELESCOPE_STATUS")
-        # status_str = status.getText()
-        # print(telescope.messageQueue(0))
-        # print(status_str)
-        # messages_blob = telescope.getBLOB("TELESCOPE_MESSAGES")
-        # if messages_blob:
-        # print(dir(messages_blob))
-        # messages_str = messages_blob.getText()
-        # print(f"Messages texte : {messages_str}")
+        message(f"\xE0   {ra_str}".rjust(lcd_width), 1)
+        message(f"\x01 {dec_str}".rjust(lcd_width), 2)
 
         time.sleep(cfg.getint('INDI', 'update_interval'))
 
@@ -177,4 +157,4 @@ indiclient.disconnectServer()
 display('Shutting down'.ljust(lcd_width), 'monitoring...'.rjust(lcd_width))
 time.sleep(3)
 LCD.clear()
-LCD.backlight('off')
+LCD.backlight_enabled = False

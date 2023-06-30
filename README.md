@@ -42,6 +42,9 @@ https://github.com/iscrow/Astra
 https://raspberrypi.stackexchange.com/questions/100195/automatically-create-hotspot-if-no-network-is-available
 https://www.raspberryconnect.com/projects/65-raspberrypi-hotspot-accesspoints/157-raspberry-pi-auto-wifi-hotspot-switch-internet
 
+# New LCD lib
+https://circuitdigest.com/microcontroller-projects/interfacing-lcd-with-raspberry-pi-4-to-create-custom-character-and-scrolling-text
+
 # Indiserver
 
 Todo : 
