@@ -48,8 +48,8 @@ Todo :
 - monitor log entries ('INFO') so we can detect when a goto command is completed
 - create custom LCD characters we may need eg °
 - create services that takes care of launching indiserver, drivers, indi-web and ou script
-
-
+- Improve mDNS behavior : most of the time name resolving fails, which was not the cas before
+- verify time and location are being sent and taken into account when skysafari establishes its connection
 
 Install INDI from sources instead of deb package (too old)
 Otherwise PyIndi-Client won't compile

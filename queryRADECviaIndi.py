@@ -1,5 +1,6 @@
 import time
 import socket
+import subprocess
 import configparser
 import PyIndi
 import LCD
@@ -75,7 +76,7 @@ def deg2HMS(ra="", dec="", round=True):
             decS = int((abs((dec - deg) * 60) - decM) * 60)
         else:
             decS = (abs((dec - deg) * 60) - decM) * 60
-        DEC = "{}{:03d}\x00{:02d}'{:02d}\"".format(ds, deg, decM, decS)
+        DEC = "{}{:03d}\xDF{:02d}'{:02d}\"".format(ds, deg, decM, decS)
     if ra:
         raH = int(ra)
         raM = int((ra - raH) * 60)
@@ -97,7 +98,7 @@ def format_coordinates(ra, dec):
 
     ra_str = f"{ra_hours:02d}h{ra_minutes:02d}'{ra_seconds:02d}\""
     # dec_str = f"{dec_degrees:02d}ß{dec_minutes:02d}'{dec_seconds:02d}\""
-    dec_str = f"{dec_degrees:02d}\x00{dec_minutes:02d}'{dec_seconds:02d}\""
+    dec_str = f"{dec_degrees:02d}\xDF{dec_minutes:02d}'{dec_seconds:02d}\""
 
     return ra_str, dec_str
 
@@ -107,18 +108,29 @@ def display(line1, line2):
     LCD.message(line1, 1)
     LCD.message(line2, 2)
 
+try:
+    ssid = subprocess.check_output(['/usr/sbin/iwgetid','-r'], text=True).strip()
+
+except:
+    ssid = "Not found"
+    print('Erreur')
 
 try:
     # lcd_init()
 
     display("SkyFi DSC", "(C) 2023 WLR")
-    time.sleep(3)
+    time.sleep(2)
     LCD.message(cfg.get('INDI', 'telescope_driver'), 2)
+    time.sleep(2)
+
+    LCD.message("SSID", 1)
+    LCD.message(ssid.rjust(lcd_width), 2)
     time.sleep(2)
     # Attempt to display what the user needs
     # SSID, hostname, IP
     hostname = socket.getfqdn()
-    LCD.message(hostname, 1)
+    LCD.message("Hostname", 1)
+    LCD.message(hostname.rjust(lcd_width), 2)
     time.sleep(2)
 
     str1 = "Waiting for"
@@ -155,6 +167,7 @@ try:
 
 except IOError:
     display("Err: can't connect", "to INDIserver")
+    time.sleep(3)
 
 except KeyboardInterrupt:
     pass

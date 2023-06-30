@@ -46,6 +46,10 @@ class LCD:
         self.lcd_byte(0x28, self.LCD_CMD)  # 101000 Data length, number of lines, font size
         self.lcd_byte(0x01, self.LCD_CMD)  # 000001 Clear display
 
+    def lcd_write(self, cmd, mode=0):  
+        self.lcd_write_four_bits(mode | (cmd & 0xF0))
+        self.lcd_write_four_bits(mode | ((cmd << 4) & 0xF0))  
+
     def lcd_byte(self, bits, mode=1):
         # Send byte to data pins
         # bits = data
@@ -112,3 +116,9 @@ class LCD:
     def define_custom_char(self, char_index, char_pattern):
         command = self.LCD_CMD | ((char_index & 0x07) << 3)
         self.bus.write_i2c_block_data(self.I2C_ADDR, command, char_pattern)
+
+    def lcd_load_custom_chars(self, fontdata):  
+        self.lcd_write(0x40);  
+        for char in fontdata:  
+            for line in char:  
+                self.lcd_write_char(line)
