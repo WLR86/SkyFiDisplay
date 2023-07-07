@@ -62,6 +62,8 @@ indiclient = IndiClient()
 monitored = indi['telescope_driver']
 indiclient.setServer(indi['server'], int(indi['port']))
 
+# Subscribe to our device
+indiclient.watchDevice(monitored)
 
 # Connexion au serveur INDI
 indiclient.connectServer()
@@ -132,7 +134,20 @@ try:
     str2 = "Data ..."
     display(str1.center(16), str2.center(16))
 
+    i = 0
+    while not(dmonitor.isConnected()):
+        str1 = "Waiting for"
+        str2 = "telescope " + '.'*i
+        display(str1.center(lcd_width), str2.ljust(lcd_width))
+        i = i + 1
+        if i == 4:
+            i = 0	
+	
+        time.sleep(0.5)
+	
+
     while True:
+        ra, dec = 0, 0	
         # Récupération des coordonnées RA et DEC
         telescope = indiclient.getDevice(cfg.get('INDI', 'telescope_driver'))
         radec = telescope.getNumber("EQUATORIAL_EOD_COORD")
