@@ -1,0 +1,8 @@
+import PyIndi
+
+
+client = PyIndi.BaseClient()
+client.setServer('localhost',7624)
+client.connectServer()
+
+telescope = client.getDevice('SynScan Legacy')

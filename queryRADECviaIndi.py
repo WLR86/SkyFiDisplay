@@ -102,6 +102,7 @@ def display(line1, line2):
     message(line1, 1)
     message(line2, 2)
 
+
 try:
     ssid = subprocess.check_output(['/usr/sbin/iwgetid','-r'], text=True).strip()
 

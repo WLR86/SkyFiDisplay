@@ -72,6 +72,68 @@ Vectors
 
 All properties are vectors (array like object). I'll say that again: ALL PROPERTIES ARE VECTORS. A property vector can have one or more values. All values have a name and a label as well. There are Number, Text, Switch, Light, and BLOB properties.
 
-# Notes 
+# Notes
 SkySafari first connection is ok, but if later tracking is enabled (like after a goto sequence), connection will fail (at least using the telescope simulator)
+
 Tests have to be done using SynScan mount, to see if this is reproducible
+
+# Others, controls
+To write a Python script that runs a command when a button is pressed on a Raspberry Pi running Raspbian OS, you can use the GPIO (General Purpose Input/Output) library in Python. Here's a step-by-step guide:
+
+1. Install the required libraries:
+   - Open the terminal on your Raspberry Pi.
+   - Run the following command to install the RPi.GPIO library:
+     ```
+     sudo apt-get install python3-rpi.gpio
+     ```
+
+2. Connect the button to the Raspberry Pi:
+   - Connect one end of the button to a GPIO pin on the Raspberry Pi (e.g., GPIO 17).
+   - Connect the other end of the button to a ground pin (GND) on the Raspberry Pi.
+
+3. Write the Python script:
+   - Create a new Python file, for example, `button_script.py`.
+   - Open the file in a text editor and add the following code:
+
+     ```python
+     import RPi.GPIO as GPIO
+     import subprocess
+
+     # Set the GPIO mode
+     GPIO.setmode(GPIO.BCM)
+
+     # Set the GPIO pin for the button
+     button_pin = 17
+
+     # Set the command to be executed when the button is pressed
+     command = "your_command_here"
+
+     # Setup the button pin as input with a pull-up resistor
+     GPIO.setup(button_pin, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+
+     # Define a callback function to run the command when the button is pressed
+     def button_callback(channel):
+         subprocess.call(command, shell=True)
+
+     # Add the event listener for the button press
+     GPIO.add_event_detect(button_pin, GPIO.FALLING, callback=button_callback, bouncetime=200)
+
+     # Keep the script running
+     while True:
+         pass
+     ```
+
+     Replace `"your_command_here"` with the actual command you want to run when the button is pressed.
+
+4. Save the Python script and exit the text editor.
+
+5. Run the Python script:
+   - Open the terminal on your Raspberry Pi.
+   - Navigate to the directory where you saved the `button_script.py` file.
+   - Run the following command to execute the script:
+     ```
+     python3 button_script.py
+     ```
+
+Now, whenever you press the button connected to the specified GPIO pin (e.g., GPIO 17), the command specified in the script will be executed.
+
