@@ -158,7 +158,7 @@ try:
         message(f"\xE0   {ra_str}".rjust(lcd_width), 1)
         message(f"\x01 {dec_str}".rjust(lcd_width), 2)
 
-        time.sleep(cfg.getint('INDI', 'update_interval'))
+        time.sleep(cfg.getfloat('INDI', 'update_interval'))
 
 except IOError:
     display("Err: can't connect", "to INDIserver")

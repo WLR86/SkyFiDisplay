@@ -1,7 +1,8 @@
 #!/bin/bash
 
 # Wait for networking to be ok
-sleep 20
+# doesn't work
+# sleep 25
 
 cd /home/willy
 
