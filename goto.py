@@ -62,11 +62,13 @@ if not device_telescope.isConnected():
     telescope_connect[0].setState(PyIndi.ISS_ON)  # the "CONNECT" switch
     indiclient.sendNewProperty(telescope_connect)  # send this new value to the device
 
-# Now let's make a goto to vega
 # Beware that ra/dec are in decimal hours/degrees
-obj = "*%20delta%20Ori"
-obj = "*%20alpha%20Lyra"
-obj = sys.argv[1]
+try:
+    obj = sys.argv[1]
+except IndexError:
+     print('Defaulting to Polaris...')
+     obj = "* alpha UMi"
+
 response = requests.get("http://cds.u-strasbg.fr/cgi-bin/nph-sesame.jsonp?&object=" + obj)
 text = response.text.replace('getSesame(','').replace(' );','')
 data = json.loads(text)
