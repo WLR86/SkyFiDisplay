@@ -4,6 +4,7 @@ import sys
 import threading
 import json
 import requests
+import configparser
 
 # Only required when attempting to change precession
 # from datetime import datetime
@@ -21,9 +22,16 @@ class IndiClient(PyIndi.BaseClient):
             print("new BLOB ", prop.getName())
             blobEvent.set()
 
+cfg = configparser.ConfigParser()
+cfg.read('config.ini')
+
+server = cfg.get('INDI', 'server')
+port = cfg.getint('INDI', 'port')
+telescope = cfg.get('INDI', 'telescope_driver')
+
 # connect the server
 indiclient = IndiClient()
-indiclient.setServer("localhost", 7624)
+indiclient.setServer(server, port)
 
 if not indiclient.connectServer():
     print(
@@ -37,7 +45,6 @@ if not indiclient.connectServer():
     sys.exit(1)
 
 # connect the scope
-telescope = "Telescope Simulator"
 device_telescope = None
 telescope_connect = None
 
