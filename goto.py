@@ -12,6 +12,7 @@ import configparser
 # from astropy.time import Time
 # import astropy.units as u
 
+
 class IndiClient(PyIndi.BaseClient):
     def __init__(self):
         super(IndiClient, self).__init__()
@@ -21,6 +22,7 @@ class IndiClient(PyIndi.BaseClient):
         if prop.getType() == PyIndi.INDI_BLOB:
             print("new BLOB ", prop.getName())
             blobEvent.set()
+
 
 cfg = configparser.ConfigParser()
 cfg.read('config.ini')
@@ -67,37 +69,40 @@ if not device_telescope.isConnected():
     # each element of the "CONNECTION" vector is a ISwitch
     telescope_connect.reset()
     telescope_connect[0].setState(PyIndi.ISS_ON)  # the "CONNECT" switch
-    indiclient.sendNewProperty(telescope_connect)  # send this new value to the device
+    # send this new value to the device
+    indiclient.sendNewProperty(telescope_connect)
 
 # Beware that ra/dec are in decimal hours/degrees
 try:
     obj = sys.argv[1]
 except IndexError:
-     print('Defaulting to Polaris...')
-     obj = "* alpha UMi"
+    print('Defaulting to Polaris...')
+    obj = "* alpha UMi"
 
-response = requests.get("http://cds.u-strasbg.fr/cgi-bin/nph-sesame.jsonp?&object=" + obj)
+response = requests.get(
+    "http://cds.u-strasbg.fr/cgi-bin/nph-sesame.jsonp?&object=" + obj
+)
 text = response.text.replace('getSesame(','').replace(' );','')
 data = json.loads(text)
 res = data['Target']['Resolver']
 jradeg, jdedeg = res['jradeg'], res['jdedeg']
 
 # Attempt to have pointer spoton in stellarium
-# the thing is that this may be a mismatch 
-# J2K / JNow 
+# the thing is that this may be a mismatch
+# J2K / JNow
 #
 # time_now = Time(datetime.utcnow(), scale='utc')
-# 
+#
 # coord_j2000 = SkyCoord(jradeg*u.deg, jdedeg*u.deg, frame=FK5)
 # fk5_now = FK5(equinox=Time(time_now.jd, format="jd", scale="utc"))
 # coord_now = coord_j2000.transform_to(fk5_now)
-# 
+#
 # jradeg = coord_j2000.ra.value
 # jdedeg = coord_j2000.dec.value
 
 dest = {"ra": (jradeg * 24.0) / 360.0, "dec": jdedeg}
-#print(dest)
-#exit
+# print(dest)
+# exit
 
 # We want to set the ON_COORD_SET switch to engage tracking after goto
 # device.getSwitch is a helper to retrieve a property vector
